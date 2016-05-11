@@ -3,7 +3,11 @@ stderrlog
 
 Logger that logs to stderr based on verbosity specified
 
+[![Build Status](https://travis-ci.org/cardoe/stderrlog-rs.svg?branch=master)](https://travis-ci.org/cardoe/stderrlog-rs)
+
 ### Documentation
+
+[Module documentation with examples](https://cardoe.github.io/stderrlog-rs/)
 
 ### Usage
 
