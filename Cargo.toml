@@ -12,3 +12,7 @@ documentation = "https://cardoe.github.io/stderrlog-rs/"
 
 [dependencies]
 log = "0.3"
+
+[dev-dependencies]
+docopt = "0.6"
+rustc-serialize = "0.3"
