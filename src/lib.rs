@@ -45,11 +45,10 @@ impl log::Log for StdErrLog {
 
     fn log(&self, record: &log::LogRecord) {
         if self.enabled(record.metadata()) {
-            writeln!(&mut ::std::io::stderr(),
-                     "{} - {}",
-                     record.level(),
-                     record.args())
-                .unwrap();
+            let _ = writeln!(&mut ::std::io::stderr(),
+                             "{} - {}",
+                             record.level(),
+                             record.args());
         }
     }
 }
