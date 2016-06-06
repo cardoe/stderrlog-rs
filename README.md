@@ -39,3 +39,40 @@ struct {
     ...
 }
 ```
+
+### Example
+
+```rust
+extern crate docopt;
+#[macro_use]
+extern crate log;
+extern crate rustc_serialize;
+extern crate stderrlog;
+
+use docopt::Docopt;
+
+const USAGE: &'static str = "
+Usage: program [-q] [-v...]
+";
+
+#[derive(Debug, RustcDecodable)]
+struct Args {
+    flag_q: bool,
+    flag_v: usize,
+}
+
+fn main() {
+    let args: Args = Docopt::new(USAGE)
+                            .and_then(|d| d.decode())
+                            .unwrap_or_else(|e| e.exit());
+
+    stderrlog::new()
+            .module(module_path!())
+            .quiet(args.flag_q)
+            .verbosity(args.flag_v)
+            .init()
+            .unwrap();
+    info!("starting up");
+
+    // ...
+}
