@@ -18,7 +18,7 @@
 //! extern crate stderrlog;
 //!
 //! fn main() {
-//!     stderrlog::new().init().unwrap();
+//!     stderrlog::new().module(module_path!()).init().unwrap();
 //!
 //!     info!("starting up");
 //!
@@ -29,13 +29,15 @@
 extern crate log;
 
 use log::{LogLevelFilter, LogMetadata};
+use std::collections::BTreeSet;
 use std::io::Write;
 
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct StdErrLog {
     verbosity: LogLevelFilter,
     quiet: bool,
+    modules: BTreeSet<String>,
 }
 
 impl log::Log for StdErrLog {
@@ -44,7 +46,14 @@ impl log::Log for StdErrLog {
     }
 
     fn log(&self, record: &log::LogRecord) {
-        if self.enabled(record.metadata()) {
+
+        // if logging isn't enabled for this level do a quick out
+        if !self.enabled(record.metadata()) {
+            return;
+        }
+
+        // this logger only logs the requested modules
+        if self.modules.contains(record.location().module_path()) {
             let _ = writeln!(&mut ::std::io::stderr(),
                              "{} - {}",
                              record.level(),
@@ -58,6 +67,7 @@ impl StdErrLog {
         StdErrLog {
             verbosity: LogLevelFilter::Error,
             quiet: false,
+            modules: BTreeSet::new(),
         }
     }
 
@@ -77,6 +87,11 @@ impl StdErrLog {
 
     pub fn quiet(&mut self, quiet: bool) -> &mut StdErrLog {
         self.quiet = quiet;
+        self
+    }
+
+    pub fn module(&mut self, module: &str) -> &mut StdErrLog {
+        self.modules.insert(module.to_owned());
         self
     }
 
@@ -104,7 +119,7 @@ mod tests {
     fn test_default_level() {
         extern crate log;
 
-        super::new().init().unwrap();
+        super::new().module(module_path!()).init().unwrap();
 
         assert_eq!(log::LogLevel::Error, log::max_log_level())
     }

@@ -4,7 +4,7 @@ extern crate stderrlog;
 
 #[test]
 fn debug_level() {
-    stderrlog::new().verbosity(3).init().unwrap();
+    stderrlog::new().module(module_path!()).verbosity(3).init().unwrap();
 
     error!("error msg");
     warn!("warning msg");
