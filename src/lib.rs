@@ -95,6 +95,13 @@ impl StdErrLog {
         self
     }
 
+    pub fn modules(&mut self, modules: Vec<&str>) -> &mut StdErrLog {
+        for module in modules {
+            self.modules.insert(module.to_owned());
+        }
+        self
+    }
+
     pub fn init(&self) -> Result<(), log::SetLoggerError> {
 
         log::set_logger(|max_log_level| {
