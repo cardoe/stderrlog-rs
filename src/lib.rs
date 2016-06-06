@@ -64,7 +64,6 @@
 extern crate log;
 
 use log::{LogLevelFilter, LogMetadata};
-use std::collections::BTreeSet;
 use std::io::Write;
 
 
@@ -72,7 +71,7 @@ use std::io::Write;
 pub struct StdErrLog {
     verbosity: LogLevelFilter,
     quiet: bool,
-    modules: BTreeSet<String>,
+    modules: Vec<String>,
 }
 
 impl log::Log for StdErrLog {
@@ -87,8 +86,13 @@ impl log::Log for StdErrLog {
             return;
         }
 
-        // this logger only logs the requested modules
-        if self.modules.contains(record.location().module_path()) || self.modules.is_empty() {
+        // module we are logging for
+        let curr_mod = record.location().module_path();
+
+        // this logger only logs the requested modules unless the
+        // vector of modules is empty
+        // modules will have module::file in the module_path
+        if self.modules.is_empty() || self.modules.iter().any(|x| curr_mod.starts_with(x)) {
             let _ = writeln!(&mut ::std::io::stderr(),
                              "{} - {}",
                              record.level(),
@@ -102,7 +106,7 @@ impl StdErrLog {
         StdErrLog {
             verbosity: LogLevelFilter::Error,
             quiet: false,
-            modules: BTreeSet::new(),
+            modules: vec![],
         }
     }
 
@@ -126,14 +130,12 @@ impl StdErrLog {
     }
 
     pub fn module(&mut self, module: &str) -> &mut StdErrLog {
-        self.modules.insert(module.to_owned());
+        self.modules.push(module.to_owned());
         self
     }
 
-    pub fn modules(&mut self, modules: Vec<&str>) -> &mut StdErrLog {
-        for module in modules {
-            self.modules.insert(module.to_owned());
-        }
+    pub fn modules(&mut self, modules: Vec<String>) -> &mut StdErrLog {
+        self.modules.extend(modules);
         self
     }
 
