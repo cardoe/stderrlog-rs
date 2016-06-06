@@ -53,7 +53,7 @@ impl log::Log for StdErrLog {
         }
 
         // this logger only logs the requested modules
-        if self.modules.contains(record.location().module_path()) {
+        if self.modules.contains(record.location().module_path()) || self.modules.is_empty() {
             let _ = writeln!(&mut ::std::io::stderr(),
                              "{} - {}",
                              record.level(),
