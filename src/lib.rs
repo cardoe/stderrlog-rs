@@ -53,6 +53,7 @@
 //!     stderrlog::new()
 //!             .module(module_path!())
 //!             .quiet(args.flag_q)
+//!             .timestamp(stderrlog::Timestamp::Second)
 //!             .verbosity(args.flag_v)
 //!             .init()
 //!             .unwrap();
@@ -62,15 +63,25 @@
 //! }
 
 extern crate log;
+extern crate time;
 
 use log::{LogLevelFilter, LogMetadata};
 use std::io::Write;
 
+/// State of the timestampping in the logger.
+#[derive(Clone, Copy, Debug)]
+pub enum Timestamp {
+    /// Disable timestamping of log messages
+    Off,
+    /// Timestamp with second granularity
+    Second,
+}
 
 #[derive(Clone, Debug)]
 pub struct StdErrLog {
     verbosity: LogLevelFilter,
     quiet: bool,
+    timestamp: Timestamp,
     modules: Vec<String>,
 }
 
@@ -89,12 +100,19 @@ impl log::Log for StdErrLog {
         // module we are logging for
         let curr_mod = record.location().module_path();
 
+        // create the timestamp prefix string
+        let timestamp_prefix = match self.timestamp {
+            Timestamp::Off => String::new(),
+            Timestamp::Second => format!("{} - ", time::now().rfc3339()),
+        };
+
         // this logger only logs the requested modules unless the
         // vector of modules is empty
         // modules will have module::file in the module_path
         if self.modules.is_empty() || self.modules.iter().any(|x| curr_mod.starts_with(x)) {
             let _ = writeln!(&mut ::std::io::stderr(),
-                             "{} - {}",
+                             "{}{} - {}",
+                             timestamp_prefix,
                              record.level(),
                              record.args());
         }
@@ -106,6 +124,7 @@ impl StdErrLog {
         StdErrLog {
             verbosity: LogLevelFilter::Error,
             quiet: false,
+            timestamp: Timestamp::Off,
             modules: vec![],
         }
     }
@@ -126,6 +145,12 @@ impl StdErrLog {
 
     pub fn quiet(&mut self, quiet: bool) -> &mut StdErrLog {
         self.quiet = quiet;
+        self
+    }
+
+    /// Enables or disables the use of timestamps in log messages
+    pub fn timestamp(&mut self, timestamp: Timestamp) -> &mut StdErrLog {
+        self.timestamp = timestamp;
         self
     }
 

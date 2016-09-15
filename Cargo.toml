@@ -1,17 +1,18 @@
 [package]
-name = "stderrlog"
-version = "0.2.1"
 authors = ["Doug Goldstein <cardoe@cardoe.com>"]
 description = "Logger that logs to stderr based on verbosity specified"
+documentation = "https://cardoe.github.io/stderrlog-rs/"
 homepage = "https://github.com/cardoe/stderrlog-rs"
-repository = "https://github.com/cardoe/stderrlog-rs"
-readme = "README.md"
 keywords = ["log", "loglevel", "logging", "stderr", "stderrlog"]
 license = "MIT/Apache-2.0"
-documentation = "https://cardoe.github.io/stderrlog-rs/"
+name = "stderrlog"
+readme = "README.md"
+repository = "https://github.com/cardoe/stderrlog-rs"
+version = "0.2.1"
 
 [dependencies]
 log = "0.3"
+time = "0.1"
 
 [dev-dependencies]
 docopt = "0.6"
