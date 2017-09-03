@@ -70,6 +70,8 @@ use thread_local::CachedThreadLocal;
 use std::cell::RefCell;
 use log::{LogLevelFilter, LogMetadata};
 use std::io::{self, Write};
+use std::collections::BTreeSet;
+use std::collections::Bound;
 
 /// State of the timestampping in the logger.
 #[derive(Clone, Copy, Debug)]
@@ -85,7 +87,7 @@ pub struct StdErrLog {
     verbosity: LogLevelFilter,
     quiet: bool,
     timestamp: Timestamp,
-    modules: Vec<String>,
+    modules: BTreeSet<String>,
     writer: CachedThreadLocal<RefCell<io::LineWriter<io::Stderr>>>,
 }
 
@@ -119,7 +121,7 @@ impl log::Log for StdErrLog {
         // this logger only logs the requested modules unless the
         // vector of modules is empty
         // modules will have module::file in the module_path
-        if self.modules.is_empty() || self.modules.iter().any(|x| curr_mod.starts_with(x)) {
+        if self.includes_module(curr_mod) {
             let writer = self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(io::stderr()))));
             let mut writer = writer.borrow_mut();
             if let Timestamp::Second = self.timestamp {
@@ -136,7 +138,7 @@ impl StdErrLog {
             verbosity: LogLevelFilter::Error,
             quiet: false,
             timestamp: Timestamp::Off,
-            modules: vec![],
+            modules: BTreeSet::new(),
             writer: CachedThreadLocal::new(),
         }
     }
@@ -167,12 +169,12 @@ impl StdErrLog {
     }
 
     pub fn module(&mut self, module: &str) -> &mut StdErrLog {
-        self.modules.push(module.to_owned());
+        self.modules.insert(module.to_owned());
         self
     }
 
-    pub fn modules(&mut self, modules: Vec<String>) -> &mut StdErrLog {
-        self.modules.extend(modules);
+    pub fn modules<T: Into<String>, I: IntoIterator<Item=T>>(&mut self, modules: I) -> &mut StdErrLog {
+        self.modules.extend(modules.into_iter().map(Into::into));
         self
     }
 
@@ -184,8 +186,22 @@ impl StdErrLog {
         }
     }
 
-    pub fn init(&self) -> Result<(), log::SetLoggerError> {
+    fn includes_module(&self, module_path: &str) -> bool {
+        // If modules is empty, include all module paths
+        if self.modules.is_empty() {
+            return true;
+        }
+        // if a prefix of module_path is in `self.modules`, it must be located at the first location before
+        // where module_path would be.
+        let mut iter = self.modules.range::<str, _>((Bound::Unbounded, Bound::Included(module_path)));
+        if let Some(prev) = iter.next_back() {
+            module_path.starts_with(prev)
+        } else {
+            false
+        }
+    }
 
+    pub fn init(&self) -> Result<(), log::SetLoggerError> {
         log::set_logger(|max_log_level| {
             max_log_level.set(self.log_level_filter());
 
