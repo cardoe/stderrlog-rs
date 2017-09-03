@@ -64,7 +64,10 @@
 
 extern crate log;
 extern crate time;
+extern crate thread_local;
 
+use thread_local::CachedThreadLocal;
+use std::cell::RefCell;
 use log::{LogLevelFilter, LogMetadata};
 use std::io::{self, Write};
 
@@ -77,12 +80,25 @@ pub enum Timestamp {
     Second,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct StdErrLog {
     verbosity: LogLevelFilter,
     quiet: bool,
     timestamp: Timestamp,
     modules: Vec<String>,
+    writer: CachedThreadLocal<RefCell<io::LineWriter<io::Stderr>>>,
+}
+
+impl Clone for StdErrLog {
+    fn clone(&self) -> StdErrLog {
+        StdErrLog {
+            verbosity: self.verbosity,
+            quiet: self.quiet,
+            timestamp: self.timestamp,
+            modules: self.modules.clone(),
+            writer: CachedThreadLocal::new(),
+        }
+    }
 }
 
 impl log::Log for StdErrLog {
@@ -104,7 +120,8 @@ impl log::Log for StdErrLog {
         // vector of modules is empty
         // modules will have module::file in the module_path
         if self.modules.is_empty() || self.modules.iter().any(|x| curr_mod.starts_with(x)) {
-            let mut writer = io::LineWriter::new(io::stderr());
+            let writer = self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(io::stderr()))));
+            let mut writer = writer.borrow_mut();
             if let Timestamp::Second = self.timestamp {
                 let _ = write!(writer, "{} - ", time::now().rfc3339());
             }
@@ -120,6 +137,7 @@ impl StdErrLog {
             quiet: false,
             timestamp: Timestamp::Off,
             modules: vec![],
+            writer: CachedThreadLocal::new(),
         }
     }
 
