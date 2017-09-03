@@ -76,7 +76,11 @@ fn main() {
             .verbosity(args.flag_v)
             .init()
             .unwrap();
-    info!("starting up");
+    trace!("trace message");
+    debug!("debug message");
+    info!("info message");
+    warn!("warn message");
+    error!("error message");
 
     // ...
 }
