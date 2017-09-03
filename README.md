@@ -1,21 +1,25 @@
-stderrlog
-=========
+[![Build status](https://travis-ci.org/cardoe/stderrlog-rs.svg?branch=master)](https://travis-ci.org/cardoe/stderrlog-rs)
+[![Rust version]( https://img.shields.io/badge/rust-1.15+-blue.svg)]()
+[![Documentation](https://docs.rs/stderrlog/badge.svg)](https://docs.rs/stderrlog)
+[![Latest version](https://img.shields.io/crates/v/stderrlog.svg)](https://crates.io/crates/stderrlog)
+[![All downloads](https://img.shields.io/crates/d/stderrlog.svg)](https://crates.io/crates/stderrlog)
+[![Downloads of latest version](https://img.shields.io/crates/dv/stderrlog.svg)](https://crates.io/crates/stderrlog)
 
-Logger that logs to stderr based on verbosity specified
+Logger that aims to provide a simple case of
+[env_logger](https://crates.io/crates/env_logger) that just
+logs to `stderr` based on verbosity.
 
-[![Build Status](https://travis-ci.org/cardoe/stderrlog-rs.svg?branch=master)](https://travis-ci.org/cardoe/stderrlog-rs)
+## Documentation
 
-### Documentation
+[Module documentation with examples](https://docs.rs/stderrlog/)
 
-[Module documentation with examples](https://cardoe.github.io/stderrlog-rs/)
-
-### Usage
+## Usage
 
 Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-stderrlog = "*"
+stderrlog = "0.2"
 ```
 
 and this to your crate root:
@@ -40,7 +44,7 @@ struct {
 }
 ```
 
-### Example
+## Example
 
 ```rust
 extern crate docopt;
