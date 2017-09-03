@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `StdErrLog` struct in crate `stderrlog`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, StdErrLog">
+
+    <title>stderrlog::StdErrLog - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../normalize.css">
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+    
+
+    
+    
+</head>
+<body class="rustdoc struct">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        
+        <p class='location'>Struct StdErrLog</p><div class="block items"><ul><li><a href="#methods">Methods</a></li><li><a href="#implementations">Trait Implementations</a></li></ul></div><p class='location'><a href='index.html'>stderrlog</a></p><script>window.sidebarCurrent = {name: 'StdErrLog', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content">
+<h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>stderrlog</a>::<wbr><a class="struct" href=''>StdErrLog</a></span><span class='out-of-band'><span id='render-detail'>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a class='srclink' href='../src/stderrlog/lib.rs.html#86-92' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct StdErrLog { /* fields omitted */ }</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/stderrlog/lib.rs.html#136-216' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class="method"><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span></h4>
+<h4 id='method.verbosity' class="method"><span id='verbosity.v' class='invisible'><code>fn <a href='#method.verbosity' class='fnname'>verbosity</a>(&amp;mut self, verbosity: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.usize.html">usize</a>) -&gt; &amp;mut <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span></h4>
+<div class='docblock'><p>Sets the verbosity level of messages that will be displayed</p>
+</div><h4 id='method.quiet' class="method"><span id='quiet.v' class='invisible'><code>fn <a href='#method.quiet' class='fnname'>quiet</a>(&amp;mut self, quiet: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a>) -&gt; &amp;mut <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span></h4>
+<h4 id='method.timestamp' class="method"><span id='timestamp.v' class='invisible'><code>fn <a href='#method.timestamp' class='fnname'>timestamp</a>(&amp;mut self, timestamp: <a class="enum" href="../stderrlog/enum.Timestamp.html" title="enum stderrlog::Timestamp">Timestamp</a>) -&gt; &amp;mut <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span></h4>
+<div class='docblock'><p>Enables or disables the use of timestamps in log messages</p>
+</div><h4 id='method.module' class="method"><span id='module.v' class='invisible'><code>fn <a href='#method.module' class='fnname'>module</a>(&amp;mut self, module: &amp;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.str.html">str</a>) -&gt; &amp;mut <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span></h4>
+<h4 id='method.modules' class="method"><span id='modules.v' class='invisible'><code>fn <a href='#method.modules' class='fnname'>modules</a>&lt;T:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;, I:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/iter/traits/trait.IntoIterator.html" title="trait core::iter::traits::IntoIterator">IntoIterator</a>&lt;Item = T&gt;&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;modules: I<br>) -&gt; &amp;mut <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span></h4>
+<h4 id='method.init' class="method"><span id='init.v' class='invisible'><code>fn <a href='#method.init' class='fnname'>init</a>(&amp;self) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.tuple.html">()</a>, <a class="struct" href="../log/struct.SetLoggerError.html" title="struct log::SetLoggerError">SetLoggerError</a>&gt;</code></span></h4>
+</div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html" title="trait core::fmt::Debug">Debug</a> for <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/stderrlog/lib.rs.html#85' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.fmt' class="method"><span id='fmt.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/fmt/trait.Debug.html#tymethod.fmt' class='fnname'>fmt</a>(&amp;self, __arg_0: &amp;mut <a class="struct" href="https://doc.rust-lang.org/nightly/core/fmt/struct.Formatter.html" title="struct core::fmt::Formatter">Formatter</a>) -&gt; <a class="type" href="https://doc.rust-lang.org/nightly/core/fmt/type.Result.html" title="type core::fmt::Result">Result</a></code></span></h4>
+<div class='docblock'><p>Formats the value using the given formatter.</p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a> for <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/stderrlog/lib.rs.html#94-104' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.clone' class="method"><span id='clone.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone' class='fnname'>clone</a>(&amp;self) -&gt; <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span></h4>
+<div class='docblock'><p>Returns a copy of the value. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#tymethod.clone">Read more</a></p>
+</div><h4 id='method.clone_from' class="method"><span id='clone_from.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from' class='fnname'>clone_from</a>(&amp;mut self, source: &amp;Self)</code><div class='since' title='Stable since Rust version 1.0.0'>1.0.0</div></span></h4>
+<div class='docblock'><p>Performs copy-assignment from <code>source</code>. <a href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html#method.clone_from">Read more</a></p>
+</div></div><h3 class='impl'><span class='in-band'><code>impl <a class="trait" href="../log/trait.Log.html" title="trait log::Log">Log</a> for <a class="struct" href="../stderrlog/struct.StdErrLog.html" title="struct stderrlog::StdErrLog">StdErrLog</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/stderrlog/lib.rs.html#106-134' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.enabled' class="method"><span id='enabled.v' class='invisible'><code>fn <a href='../log/trait.Log.html#tymethod.enabled' class='fnname'>enabled</a>(&amp;self, metadata: &amp;<a class="struct" href="../log/struct.LogMetadata.html" title="struct log::LogMetadata">LogMetadata</a>) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.bool.html">bool</a></code></span></h4>
+<div class='docblock'><p>Determines if a log message with the specified metadata would be logged. <a href="../log/trait.Log.html#tymethod.enabled">Read more</a></p>
+</div><h4 id='method.log' class="method"><span id='log.v' class='invisible'><code>fn <a href='../log/trait.Log.html#tymethod.log' class='fnname'>log</a>(&amp;self, record: &amp;<a class="struct" href="../log/struct.LogRecord.html" title="struct log::LogRecord">LogRecord</a>)</code></span></h4>
+<div class='docblock'><p>Logs the <code>LogRecord</code>. <a href="../log/trait.Log.html#tymethod.log">Read more</a></p>
+</div></div></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "stderrlog";
+    </script>
+    <script src="../main.js"></script>
+    <script defer src="../search-index.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Timestamp","State of the timestampping in the logger."]],"fn":[["new",""]],"struct":[["StdErrLog",""]]});
