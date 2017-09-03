@@ -17,3 +17,4 @@ time = "0.1"
 [dev-dependencies]
 docopt = "0.6"
 rustc-serialize = "0.3"
+libc = "0.2"
