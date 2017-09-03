@@ -1,9 +1,10 @@
 [package]
 authors = ["Doug Goldstein <cardoe@cardoe.com>"]
 description = "Logger that logs to stderr based on verbosity specified"
-documentation = "https://cardoe.github.io/stderrlog-rs/"
+documentation = "https://docs.rs/stderrlog/"
 homepage = "https://github.com/cardoe/stderrlog-rs"
 keywords = ["log", "loglevel", "logging", "stderr", "stderrlog"]
+categories = ["development-tools::debugging"]
 license = "MIT/Apache-2.0"
 name = "stderrlog"
 readme = "README.md"
