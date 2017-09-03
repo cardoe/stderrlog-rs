@@ -87,7 +87,7 @@ pub struct StdErrLog {
 
 impl log::Log for StdErrLog {
     fn enabled(&self, metadata: &LogMetadata) -> bool {
-        metadata.level() <= log::max_log_level()
+        metadata.level() <= self.log_level_filter()
     }
 
     fn log(&self, record: &log::LogRecord) {
@@ -164,14 +164,18 @@ impl StdErrLog {
         self
     }
 
+    fn log_level_filter(&self) -> LogLevelFilter {
+        if self.quiet {
+            LogLevelFilter::Off
+        } else {
+            self.verbosity
+        }
+    }
+
     pub fn init(&self) -> Result<(), log::SetLoggerError> {
 
         log::set_logger(|max_log_level| {
-            if self.quiet {
-                max_log_level.set(LogLevelFilter::Off);
-            } else {
-                max_log_level.set(self.verbosity);
-            }
+            max_log_level.set(self.log_level_filter());
 
             Box::new(self.clone())
         })
