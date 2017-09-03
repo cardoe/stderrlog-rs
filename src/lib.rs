@@ -66,7 +66,7 @@ extern crate log;
 extern crate time;
 
 use log::{LogLevelFilter, LogMetadata};
-use std::io::Write;
+use std::io::{self, Write};
 
 /// State of the timestampping in the logger.
 #[derive(Clone, Copy, Debug)]
@@ -100,21 +100,15 @@ impl log::Log for StdErrLog {
         // module we are logging for
         let curr_mod = record.location().module_path();
 
-        // create the timestamp prefix string
-        let timestamp_prefix = match self.timestamp {
-            Timestamp::Off => String::new(),
-            Timestamp::Second => format!("{} - ", time::now().rfc3339()),
-        };
-
         // this logger only logs the requested modules unless the
         // vector of modules is empty
         // modules will have module::file in the module_path
         if self.modules.is_empty() || self.modules.iter().any(|x| curr_mod.starts_with(x)) {
-            let _ = writeln!(&mut ::std::io::stderr(),
-                             "{}{} - {}",
-                             timestamp_prefix,
-                             record.level(),
-                             record.args());
+            let mut writer = io::LineWriter::new(io::stderr());
+            if let Timestamp::Second = self.timestamp {
+                let _ = write!(writer, "{} - ", time::now().rfc3339());
+            }
+            let _ = writeln!(writer, "{} - {}", record.level(), record.args());
         }
     }
 }
