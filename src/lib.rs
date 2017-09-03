@@ -66,12 +66,12 @@ extern crate log;
 extern crate time;
 extern crate thread_local;
 
-use thread_local::CachedThreadLocal;
-use std::cell::RefCell;
 use log::{LogLevelFilter, LogMetadata};
-use std::io::{self, Write};
+use std::cell::RefCell;
 use std::collections::BTreeSet;
 use std::collections::Bound;
+use std::io::{self, Write};
+use thread_local::CachedThreadLocal;
 
 /// State of the timestampping in the logger.
 #[derive(Clone, Copy, Debug)]
@@ -122,7 +122,8 @@ impl log::Log for StdErrLog {
         // vector of modules is empty
         // modules will have module::file in the module_path
         if self.includes_module(curr_mod) {
-            let writer = self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(io::stderr()))));
+            let writer =
+                self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(io::stderr()))));
             let mut writer = writer.borrow_mut();
             if let Timestamp::Second = self.timestamp {
                 let _ = write!(writer, "{} - ", time::now().rfc3339());
@@ -173,7 +174,9 @@ impl StdErrLog {
         self
     }
 
-    pub fn modules<T: Into<String>, I: IntoIterator<Item=T>>(&mut self, modules: I) -> &mut StdErrLog {
+    pub fn modules<T: Into<String>, I: IntoIterator<Item = T>>(&mut self,
+                                                               modules: I)
+                                                               -> &mut StdErrLog {
         self.modules.extend(modules.into_iter().map(Into::into));
         self
     }
@@ -191,9 +194,11 @@ impl StdErrLog {
         if self.modules.is_empty() {
             return true;
         }
-        // if a prefix of module_path is in `self.modules`, it must be located at the first location before
+        // if a prefix of module_path is in `self.modules`, it must
+        // be located at the first location before
         // where module_path would be.
-        let mut iter = self.modules.range::<str, _>((Bound::Unbounded, Bound::Included(module_path)));
+        let mut iter = self.modules.range::<str, _>((Bound::Unbounded,
+                                                     Bound::Included(module_path)));
         if let Some(prev) = iter.next_back() {
             module_path.starts_with(prev)
         } else {
@@ -203,10 +208,10 @@ impl StdErrLog {
 
     pub fn init(&self) -> Result<(), log::SetLoggerError> {
         log::set_logger(|max_log_level| {
-            max_log_level.set(self.log_level_filter());
+                            max_log_level.set(self.log_level_filter());
 
-            Box::new(self.clone())
-        })
+                            Box::new(self.clone())
+                        })
     }
 }
 
