@@ -64,9 +64,14 @@
 
 extern crate log;
 extern crate time;
+extern crate thread_local;
 
+use thread_local::CachedThreadLocal;
+use std::cell::RefCell;
 use log::{LogLevelFilter, LogMetadata};
-use std::io::Write;
+use std::io::{self, Write};
+use std::collections::BTreeSet;
+use std::collections::Bound;
 
 /// State of the timestampping in the logger.
 #[derive(Clone, Copy, Debug)]
@@ -77,17 +82,30 @@ pub enum Timestamp {
     Second,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct StdErrLog {
     verbosity: LogLevelFilter,
     quiet: bool,
     timestamp: Timestamp,
-    modules: Vec<String>,
+    modules: BTreeSet<String>,
+    writer: CachedThreadLocal<RefCell<io::LineWriter<io::Stderr>>>,
+}
+
+impl Clone for StdErrLog {
+    fn clone(&self) -> StdErrLog {
+        StdErrLog {
+            verbosity: self.verbosity,
+            quiet: self.quiet,
+            timestamp: self.timestamp,
+            modules: self.modules.clone(),
+            writer: CachedThreadLocal::new(),
+        }
+    }
 }
 
 impl log::Log for StdErrLog {
     fn enabled(&self, metadata: &LogMetadata) -> bool {
-        metadata.level() <= log::max_log_level()
+        metadata.level() <= self.log_level_filter()
     }
 
     fn log(&self, record: &log::LogRecord) {
@@ -100,21 +118,16 @@ impl log::Log for StdErrLog {
         // module we are logging for
         let curr_mod = record.location().module_path();
 
-        // create the timestamp prefix string
-        let timestamp_prefix = match self.timestamp {
-            Timestamp::Off => String::new(),
-            Timestamp::Second => format!("{} - ", time::now().rfc3339()),
-        };
-
         // this logger only logs the requested modules unless the
         // vector of modules is empty
         // modules will have module::file in the module_path
-        if self.modules.is_empty() || self.modules.iter().any(|x| curr_mod.starts_with(x)) {
-            let _ = writeln!(&mut ::std::io::stderr(),
-                             "{}{} - {}",
-                             timestamp_prefix,
-                             record.level(),
-                             record.args());
+        if self.includes_module(curr_mod) {
+            let writer = self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(io::stderr()))));
+            let mut writer = writer.borrow_mut();
+            if let Timestamp::Second = self.timestamp {
+                let _ = write!(writer, "{} - ", time::now().rfc3339());
+            }
+            let _ = writeln!(writer, "{} - {}", record.level(), record.args());
         }
     }
 }
@@ -125,7 +138,8 @@ impl StdErrLog {
             verbosity: LogLevelFilter::Error,
             quiet: false,
             timestamp: Timestamp::Off,
-            modules: vec![],
+            modules: BTreeSet::new(),
+            writer: CachedThreadLocal::new(),
         }
     }
 
@@ -155,23 +169,41 @@ impl StdErrLog {
     }
 
     pub fn module(&mut self, module: &str) -> &mut StdErrLog {
-        self.modules.push(module.to_owned());
+        self.modules.insert(module.to_owned());
         self
     }
 
-    pub fn modules(&mut self, modules: Vec<String>) -> &mut StdErrLog {
-        self.modules.extend(modules);
+    pub fn modules<T: Into<String>, I: IntoIterator<Item=T>>(&mut self, modules: I) -> &mut StdErrLog {
+        self.modules.extend(modules.into_iter().map(Into::into));
         self
+    }
+
+    fn log_level_filter(&self) -> LogLevelFilter {
+        if self.quiet {
+            LogLevelFilter::Off
+        } else {
+            self.verbosity
+        }
+    }
+
+    fn includes_module(&self, module_path: &str) -> bool {
+        // If modules is empty, include all module paths
+        if self.modules.is_empty() {
+            return true;
+        }
+        // if a prefix of module_path is in `self.modules`, it must be located at the first location before
+        // where module_path would be.
+        let mut iter = self.modules.range::<str, _>((Bound::Unbounded, Bound::Included(module_path)));
+        if let Some(prev) = iter.next_back() {
+            module_path.starts_with(prev)
+        } else {
+            false
+        }
     }
 
     pub fn init(&self) -> Result<(), log::SetLoggerError> {
-
         log::set_logger(|max_log_level| {
-            if self.quiet {
-                max_log_level.set(LogLevelFilter::Off);
-            } else {
-                max_log_level.set(self.verbosity);
-            }
+            max_log_level.set(self.log_level_filter());
 
             Box::new(self.clone())
         })
