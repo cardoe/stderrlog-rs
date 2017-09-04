@@ -68,9 +68,8 @@ extern crate thread_local;
 
 use log::{LogLevelFilter, LogMetadata};
 use std::cell::RefCell;
-use std::collections::BTreeSet;
-use std::collections::Bound;
 use std::io::{self, Write};
+use std::fmt;
 use thread_local::CachedThreadLocal;
 
 /// State of the timestampping in the logger.
@@ -82,13 +81,24 @@ pub enum Timestamp {
     Second,
 }
 
-#[derive(Debug)]
 pub struct StdErrLog {
     verbosity: LogLevelFilter,
     quiet: bool,
     timestamp: Timestamp,
-    modules: BTreeSet<String>,
+    modules: Vec<String>,
     writer: CachedThreadLocal<RefCell<io::LineWriter<io::Stderr>>>,
+}
+
+impl fmt::Debug for StdErrLog {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        f.debug_struct("StdErrLog")
+            .field("verbosity", &self.verbosity)
+            .field("quiet", &self.quiet)
+            .field("timestamp", &self.timestamp)
+            .field("modules", &self.modules)
+            .field("writer", &"stderr")
+            .finish()
+    }
 }
 
 impl Clone for StdErrLog {
@@ -139,7 +149,7 @@ impl StdErrLog {
             verbosity: LogLevelFilter::Error,
             quiet: false,
             timestamp: Timestamp::Off,
-            modules: BTreeSet::new(),
+            modules: Vec::new(),
             writer: CachedThreadLocal::new(),
         }
     }
@@ -169,15 +179,21 @@ impl StdErrLog {
         self
     }
 
-    pub fn module(&mut self, module: &str) -> &mut StdErrLog {
-        self.modules.insert(module.to_owned());
+    pub fn module<T: Into<String>>(&mut self, module: T) -> &mut StdErrLog {
+        let to_insert = module.into();
+        // If Ok, the module was already found
+        if let Err(i) = self.modules.binary_search(&to_insert) {
+            self.modules.insert(i, to_insert);
+        }
         self
     }
 
     pub fn modules<T: Into<String>, I: IntoIterator<Item = T>>(&mut self,
                                                                modules: I)
                                                                -> &mut StdErrLog {
-        self.modules.extend(modules.into_iter().map(Into::into));
+        for module in modules {
+            self.module(module);
+        }
         self
     }
 
@@ -197,12 +213,18 @@ impl StdErrLog {
         // if a prefix of module_path is in `self.modules`, it must
         // be located at the first location before
         // where module_path would be.
-        let mut iter = self.modules.range::<str, _>((Bound::Unbounded,
-                                                     Bound::Included(module_path)));
-        if let Some(prev) = iter.next_back() {
-            module_path.starts_with(prev)
-        } else {
-            false
+        match self.modules.binary_search_by(|module| module.as_str().cmp(&module_path)) {
+            Ok(_) => {
+                // Found exact module: return true
+                true
+            }
+            Err(0) => {
+                // if there's no item which would be located before module_path, no prefix is there
+                false
+            }
+            Err(i) => {
+                module_path.starts_with(&self.modules[i - 1])
+            }
         }
     }
 
