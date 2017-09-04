@@ -62,10 +62,11 @@
 //!     // ...
 //! }
 
+extern crate chrono;
 extern crate log;
-extern crate time;
 extern crate thread_local;
 
+use chrono::Local;
 use log::{LogLevelFilter, LogMetadata};
 use std::cell::RefCell;
 use std::io::{self, Write};
@@ -79,6 +80,10 @@ pub enum Timestamp {
     Off,
     /// Timestamp with second granularity
     Second,
+    /// Timestamp with microsecond granularity
+    Microsecond,
+    /// Timestamp with nanosecond granularity
+    Nanosecond,
 }
 
 pub struct StdErrLog {
@@ -135,8 +140,20 @@ impl log::Log for StdErrLog {
             let writer =
                 self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(io::stderr()))));
             let mut writer = writer.borrow_mut();
-            if let Timestamp::Second = self.timestamp {
-                let _ = write!(writer, "{} - ", time::now().rfc3339());
+            match self.timestamp {
+                Timestamp::Second => {
+                    let fmt = "%Y-%m-%dT%H:%M:%S%:z";
+                    let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                },
+                Timestamp::Microsecond => {
+                    let fmt = "%Y-%m-%dT%H:%M:%S%.6f%:z";
+                    let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                },
+                Timestamp::Nanosecond => {
+                    let fmt = "%Y-%m-%dT%H:%M:%S%.9f%:z";
+                    let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                },
+                Timestamp::Off => {},
             }
             let _ = writeln!(writer, "{} - {}", record.level(), record.args());
         }
