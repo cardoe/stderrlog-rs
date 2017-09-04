@@ -13,6 +13,9 @@ fn main() {
              .short("v")
              .multiple(true)
              .help("Increase message verbosity"))
+        .arg(Arg::with_name("quiet")
+             .short("q")
+             .help("Silence all output"))
         .get_matches();
 
     let verbose = m.occurrences_of("verbosity") as usize;
