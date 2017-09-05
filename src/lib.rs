@@ -190,7 +190,7 @@ impl Clone for StdErrLog {
 
 impl log::Log for StdErrLog {
     fn enabled(&self, metadata: &LogMetadata) -> bool {
-        metadata.level() <= self.log_level_filter()
+        metadata.level() <= self.log_level_filter() && self.includes_module(metadata.target())
     }
 
     fn log(&self, record: &log::LogRecord) {
@@ -200,45 +200,40 @@ impl log::Log for StdErrLog {
             return;
         }
 
-        // module we are logging for
-        let curr_mod = record.location().module_path();
-
         // this logger only logs the requested modules unless the
         // vector of modules is empty
         // modules will have module::file in the module_path
-        if self.includes_module(curr_mod) {
-            let writer =
-                self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice)))));
-            let mut writer = writer.borrow_mut();
-            let color = match record.metadata().level() {
-                LogLevel::Error => Color::Red,
-                LogLevel::Warn => Color::Magenta,
-                LogLevel::Info => Color::Yellow,
-                LogLevel::Debug => Color::Cyan,
-                LogLevel::Trace => Color::Blue,
-            };
-            {
-                writer.get_mut().set_color(ColorSpec::new().set_fg(Some(color))).expect("failed to set color");
-            }
-            match self.timestamp {
-                Timestamp::Second => {
-                    let fmt = "%Y-%m-%dT%H:%M:%S%:z";
-                    let _ = write!(writer, "{} - ", Local::now().format(fmt));
-                },
-                Timestamp::Microsecond => {
-                    let fmt = "%Y-%m-%dT%H:%M:%S%.6f%:z";
-                    let _ = write!(writer, "{} - ", Local::now().format(fmt));
-                },
-                Timestamp::Nanosecond => {
-                    let fmt = "%Y-%m-%dT%H:%M:%S%.9f%:z";
-                    let _ = write!(writer, "{} - ", Local::now().format(fmt));
-                },
-                Timestamp::Off => {},
-            }
-            let _ = writeln!(writer, "{} - {}", record.level(), record.args());
-            {
-                writer.get_mut().reset().expect("failed to reset the color");
-            }
+        let writer =
+            self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice)))));
+        let mut writer = writer.borrow_mut();
+        let color = match record.metadata().level() {
+            LogLevel::Error => Color::Red,
+            LogLevel::Warn => Color::Magenta,
+            LogLevel::Info => Color::Yellow,
+            LogLevel::Debug => Color::Cyan,
+            LogLevel::Trace => Color::Blue,
+        };
+        {
+            writer.get_mut().set_color(ColorSpec::new().set_fg(Some(color))).expect("failed to set color");
+        }
+        match self.timestamp {
+            Timestamp::Second => {
+                let fmt = "%Y-%m-%dT%H:%M:%S%:z";
+                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+            },
+            Timestamp::Microsecond => {
+                let fmt = "%Y-%m-%dT%H:%M:%S%.6f%:z";
+                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+            },
+            Timestamp::Nanosecond => {
+                let fmt = "%Y-%m-%dT%H:%M:%S%.9f%:z";
+                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+            },
+            Timestamp::Off => {},
+        }
+        let _ = writeln!(writer, "{} - {}", record.level(), record.args());
+        {
+            writer.get_mut().reset().expect("failed to reset the color");
         }
     }
 }
