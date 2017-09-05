@@ -34,5 +34,15 @@ mod included {
             utils::set_logger(logger);
             assert!(log_enabled!(log::LogLevel::Error));
         }
+        #[test]
+        fn sub_and_supermodule_included() {
+            utils::init();
+            let mut logger = StdErrLog::new();
+            logger.module("module_inclusion::included::a");
+            logger.module("module_inclusion::included");
+            logger.verbosity(10);
+            utils::set_logger(logger);
+            assert!(log_enabled!(log::LogLevel::Error));
+        }
     }
 }
