@@ -12,3 +12,8 @@
 - improved performance (https://github.com/cardoe/stderrlog-rs/pull/2)
 - improved docopt example in README
 - migrated from time to chrono
+
+### Thanks
+
+- Thanks to Zachary Dremann <dremann@gmail.com> for the performance
+  improvements and the nudge to improve the docs.
