@@ -151,6 +151,7 @@ pub enum Timestamp {
     Nanosecond,
 }
 
+/// Data specific to this logger
 pub struct StdErrLog {
     verbosity: LogLevelFilter,
     quiet: bool,
@@ -226,6 +227,7 @@ impl log::Log for StdErrLog {
 }
 
 impl StdErrLog {
+    /// creates a new stderr logger
     pub fn new() -> StdErrLog {
         StdErrLog {
             verbosity: LogLevelFilter::Error,
@@ -250,6 +252,7 @@ impl StdErrLog {
         self
     }
 
+    /// silence all output, no matter the value of verbosity
     pub fn quiet(&mut self, quiet: bool) -> &mut StdErrLog {
         self.quiet = quiet;
         self
@@ -261,6 +264,7 @@ impl StdErrLog {
         self
     }
 
+    /// specify a module to allow to log to stderr
     pub fn module<T: Into<String>>(&mut self, module: T) -> &mut StdErrLog {
         let to_insert = module.into();
         // If Ok, the module was already found
@@ -270,6 +274,7 @@ impl StdErrLog {
         self
     }
 
+    /// specifiy modules to allow to log to stderr
     pub fn modules<T: Into<String>, I: IntoIterator<Item = T>>(&mut self,
                                                                modules: I)
                                                                -> &mut StdErrLog {
@@ -310,6 +315,7 @@ impl StdErrLog {
         }
     }
 
+    /// sets the the logger as active
     pub fn init(&self) -> Result<(), log::SetLoggerError> {
         log::set_logger(|max_log_level| {
                             max_log_level.set(self.log_level_filter());
@@ -319,6 +325,13 @@ impl StdErrLog {
     }
 }
 
+impl Default for StdErrLog {
+    fn default() -> Self {
+        StdErrLog::new()
+    }
+}
+
+/// creates a new stderr logger
 pub fn new() -> StdErrLog {
     StdErrLog::new()
 }
