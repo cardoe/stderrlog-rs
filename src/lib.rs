@@ -288,7 +288,14 @@ impl StdErrLog {
         let to_insert = module.into();
         // If Ok, the module was already found
         if let Err(i) = self.modules.binary_search(&to_insert) {
-            self.modules.insert(i, to_insert);
+            // If a super-module of the current module already exists, don't insert this module
+            if i == 0 || !is_submodule(&self.modules[i - 1], &to_insert) {
+                // Remove any submodules of the module we're inserting
+                if let Some(submodule_count) = self.modules[i..].iter().position(|possible_submodule| !is_submodule(&to_insert, possible_submodule)) {
+                    self.modules.drain(i..i+submodule_count);
+                }
+                self.modules.insert(i, to_insert);
+            }
         }
         self
     }
