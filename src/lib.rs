@@ -329,8 +329,7 @@ impl StdErrLog {
                 false
             }
             Err(i) => {
-                module_path.starts_with(&self.modules[i - 1])
-                    && module_path.as_bytes()[self.modules[i - 1].len()] == b':'
+                is_submodule(&self.modules[i - 1], module_path)
             }
         }
     }
@@ -354,6 +353,10 @@ impl Default for StdErrLog {
 /// creates a new stderr logger
 pub fn new() -> StdErrLog {
     StdErrLog::new()
+}
+
+fn is_submodule(parent: &str, possible_child: &str) -> bool {
+    parent.split("::").zip(possible_child.split("::")).all(|(a, b)| a == b)
 }
 
 #[cfg(test)]
