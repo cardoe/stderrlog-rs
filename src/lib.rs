@@ -8,7 +8,8 @@
 
 //! A simple logger to provide symantics similar to what is expected
 //! of most UNIX utilities by logging to stderr and the higher the
-//! verbosity the higher the log level
+//! verbosity the higher the log level. Additionally it supports the
+//! ability to provide timestamps at different granularities.
 //!
 //! ### Examples
 //!
@@ -57,7 +58,11 @@
 //!             .verbosity(args.flag_v)
 //!             .init()
 //!             .unwrap();
-//!     info!("starting up");
+//!     trace!("trace message");
+//!     debug!("debug message");
+//!     info!("info message");
+//!     warn!("warn message");
+//!     error!("error message");
 //!
 //!     // ...
 //! }
