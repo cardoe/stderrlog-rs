@@ -330,6 +330,7 @@ impl StdErrLog {
             }
             Err(i) => {
                 module_path.starts_with(&self.modules[i - 1])
+                    && module_path.as_bytes()[self.modules[i - 1].len()] == b':'
             }
         }
     }
