@@ -129,14 +129,18 @@
 
 extern crate chrono;
 extern crate log;
+extern crate termcolor;
 extern crate thread_local;
 
 use chrono::Local;
-use log::{LogLevelFilter, LogMetadata};
+use log::{LogLevel, LogLevelFilter, LogMetadata};
 use std::cell::RefCell;
 use std::io::{self, Write};
 use std::fmt;
+use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
 use thread_local::CachedThreadLocal;
+
+pub use termcolor::ColorChoice;
 
 /// State of the timestampping in the logger.
 #[derive(Clone, Copy, Debug)]
@@ -157,7 +161,8 @@ pub struct StdErrLog {
     quiet: bool,
     timestamp: Timestamp,
     modules: Vec<String>,
-    writer: CachedThreadLocal<RefCell<io::LineWriter<io::Stderr>>>,
+    writer: CachedThreadLocal<RefCell<io::LineWriter<StandardStream>>>,
+    color_choice: ColorChoice,
 }
 
 impl fmt::Debug for StdErrLog {
@@ -168,6 +173,7 @@ impl fmt::Debug for StdErrLog {
             .field("timestamp", &self.timestamp)
             .field("modules", &self.modules)
             .field("writer", &"stderr")
+            .field("color_choice", &self.color_choice)
             .finish()
     }
 }
@@ -175,11 +181,9 @@ impl fmt::Debug for StdErrLog {
 impl Clone for StdErrLog {
     fn clone(&self) -> StdErrLog {
         StdErrLog {
-            verbosity: self.verbosity,
-            quiet: self.quiet,
-            timestamp: self.timestamp,
             modules: self.modules.clone(),
             writer: CachedThreadLocal::new(),
+            .. *self
         }
     }
 }
@@ -204,8 +208,18 @@ impl log::Log for StdErrLog {
         // modules will have module::file in the module_path
         if self.includes_module(curr_mod) {
             let writer =
-                self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(io::stderr()))));
+                self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice)))));
             let mut writer = writer.borrow_mut();
+            let color = match record.metadata().level() {
+                LogLevel::Error => Color::Red,
+                LogLevel::Warn => Color::Magenta,
+                LogLevel::Info => Color::Yellow,
+                LogLevel::Debug => Color::Cyan,
+                LogLevel::Trace => Color::Blue,
+            };
+            {
+                writer.get_mut().set_color(ColorSpec::new().set_fg(Some(color))).expect("failed to set color");
+            }
             match self.timestamp {
                 Timestamp::Second => {
                     let fmt = "%Y-%m-%dT%H:%M:%S%:z";
@@ -222,6 +236,9 @@ impl log::Log for StdErrLog {
                 Timestamp::Off => {},
             }
             let _ = writeln!(writer, "{} - {}", record.level(), record.args());
+            {
+                writer.get_mut().reset().expect("failed to reset the color");
+            }
         }
     }
 }
@@ -235,6 +252,7 @@ impl StdErrLog {
             timestamp: Timestamp::Off,
             modules: Vec::new(),
             writer: CachedThreadLocal::new(),
+            color_choice: ColorChoice::Auto,
         }
     }
 
@@ -261,6 +279,12 @@ impl StdErrLog {
     /// Enables or disables the use of timestamps in log messages
     pub fn timestamp(&mut self, timestamp: Timestamp) -> &mut StdErrLog {
         self.timestamp = timestamp;
+        self
+    }
+
+    /// Enables or disables the use of color in log messages
+    pub fn color(&mut self, choice: ColorChoice) -> &mut StdErrLog {
+        self.color_choice = choice;
         self
     }
 
