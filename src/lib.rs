@@ -200,9 +200,6 @@ impl log::Log for StdErrLog {
             return;
         }
 
-        // this logger only logs the requested modules unless the
-        // vector of modules is empty
-        // modules will have module::file in the module_path
         let writer =
             self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice)))));
         let mut writer = writer.borrow_mut();
@@ -285,20 +282,23 @@ impl StdErrLog {
 
     /// specify a module to allow to log to stderr
     pub fn module<T: Into<String>>(&mut self, module: T) -> &mut StdErrLog {
-        let to_insert = module.into();
+        self._module(module.into())
+    }
+
+    fn _module(&mut self, module: String) -> &mut StdErrLog {
         // If Ok, the module was already found
-        if let Err(i) = self.modules.binary_search(&to_insert) {
+        if let Err(i) = self.modules.binary_search(&module) {
             // If a super-module of the current module already exists, don't insert this module
-            if i == 0 || !is_submodule(&self.modules[i - 1], &to_insert) {
+            if i == 0 || !is_submodule(&self.modules[i - 1], &module) {
                 // Remove any submodules of the module we're inserting
                 let submodule_count = self.modules[i..]
                     .iter()
                     .take_while(|possible_submodule|
-                        is_submodule(&to_insert, possible_submodule)
+                        is_submodule(&module, possible_submodule)
                     )
                     .count();
                 self.modules.drain(i..i+submodule_count);
-                self.modules.insert(i, to_insert);
+                self.modules.insert(i, module);
             }
         }
         self
