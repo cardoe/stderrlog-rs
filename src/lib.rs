@@ -367,11 +367,43 @@ pub fn new() -> StdErrLog {
 }
 
 fn is_submodule(parent: &str, possible_child: &str) -> bool {
-    parent.split("::").zip(possible_child.split("::")).all(|(a, b)| a == b)
+    // Treat as bytes, because we'll be doing slicing, and we only care about ':' chars
+    let parent = parent.as_bytes();
+    let possible_child = possible_child.as_bytes();
+
+    // a longer module path cannot be a parent of a shorter module path
+    if parent.len() > possible_child.len() {
+        return false;
+    }
+
+    // If the path up to the parent isn't the same as the child,
+    if parent != &possible_child[..parent.len()] {
+        return false;
+    }
+
+    // Either the path is exactly the same, or the sub module should have a "::" after
+    // the length of the parent path. This prevents things like 'a::bad' being considered
+    // a submodule of 'a::b'
+    parent.len() == possible_child.len() ||
+        possible_child.get(parent.len()..parent.len() + 2) == Some(b"::")
 }
 
 #[cfg(test)]
 mod tests {
+    use super::is_submodule;
+
+    #[test]
+    fn submodule() {
+        assert!(is_submodule("a", "a::b::c::d"));
+        assert!(is_submodule("a::b::c", "a::b::c::d"));
+        assert!(is_submodule("a::b::c", "a::b::c"));
+        assert!(!is_submodule("a::b::c", "a::bad::c"));
+        assert!(!is_submodule("a::b::c", "a::b::cab"));
+        assert!(!is_submodule("a::b::c", "a::b::cab::d"));
+        assert!(!is_submodule("a::b::c", "a::b"));
+        assert!(!is_submodule("a::b::c", "a::bad"));
+    }
+
     #[test]
     fn test_default_level() {
         extern crate log;
