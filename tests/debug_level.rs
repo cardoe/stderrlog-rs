@@ -16,5 +16,5 @@ fn debug_level() {
     debug!("debug msg");
     trace!("trace msg");
 
-    assert_eq!(log::LogLevel::Debug, log::max_log_level())
+    assert_eq!(log::Level::Debug, log::max_level())
 }

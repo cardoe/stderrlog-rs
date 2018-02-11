@@ -16,5 +16,5 @@ fn warn_level() {
     debug!("debug msg");
     trace!("trace msg");
 
-    assert_eq!(log::LogLevel::Warn, log::max_log_level())
+    assert_eq!(log::Level::Warn, log::max_level())
 }

@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 0.4.0
+
+### Changed
+
+- Full use and depend on log 0.4.1.
+
 ## 0.3.1
 
 ### Added

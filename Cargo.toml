@@ -14,7 +14,7 @@ version = "0.3.1-pre"
 
 [dependencies]
 chrono = "0.4"
-log = "0.3"
+log = { version = "0.4.1", features = ["std"] }
 termcolor = "0.3.3"
 thread_local = "0.3"
 

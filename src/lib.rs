@@ -220,7 +220,7 @@ extern crate termcolor;
 extern crate thread_local;
 
 use chrono::Local;
-use log::{LogLevel, LogLevelFilter, LogMetadata};
+use log::{Level, LevelFilter, Log, Metadata, Record};
 use std::cell::RefCell;
 use std::fmt;
 use std::io::{self, Write};
@@ -267,7 +267,7 @@ impl FromStr for Timestamp {
 
 /// Data specific to this logger
 pub struct StdErrLog {
-    verbosity: LogLevelFilter,
+    verbosity: LevelFilter,
     quiet: bool,
     timestamp: Timestamp,
     modules: Vec<String>,
@@ -298,13 +298,12 @@ impl Clone for StdErrLog {
     }
 }
 
-impl log::Log for StdErrLog {
-    fn enabled(&self, metadata: &LogMetadata) -> bool {
+impl Log for StdErrLog {
+    fn enabled(&self, metadata: &Metadata) -> bool {
         metadata.level() <= self.log_level_filter() && self.includes_module(metadata.target())
     }
 
-    fn log(&self, record: &log::LogRecord) {
-
+    fn log(&self, record: &Record) {
         // if logging isn't enabled for this level do a quick out
         if !self.enabled(record.metadata()) {
             return;
@@ -315,11 +314,11 @@ impl log::Log for StdErrLog {
         });
         let mut writer = writer.borrow_mut();
         let color = match record.metadata().level() {
-            LogLevel::Error => Color::Red,
-            LogLevel::Warn => Color::Magenta,
-            LogLevel::Info => Color::Yellow,
-            LogLevel::Debug => Color::Cyan,
-            LogLevel::Trace => Color::Blue,
+            Level::Error => Color::Red,
+            Level::Warn => Color::Magenta,
+            Level::Info => Color::Yellow,
+            Level::Debug => Color::Cyan,
+            Level::Trace => Color::Blue,
         };
         {
             writer
@@ -347,13 +346,21 @@ impl log::Log for StdErrLog {
             writer.get_mut().reset().expect("failed to reset the color");
         }
     }
+
+    fn flush(&self) {
+        let writer = self.writer.get_or(|| {
+            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice))))
+        });
+        let mut writer = writer.borrow_mut();
+        writer.flush().ok();
+    }
 }
 
 impl StdErrLog {
     /// creates a new stderr logger
     pub fn new() -> StdErrLog {
         StdErrLog {
-            verbosity: LogLevelFilter::Error,
+            verbosity: LevelFilter::Error,
             quiet: false,
             timestamp: Timestamp::Off,
             modules: Vec::new(),
@@ -365,11 +372,11 @@ impl StdErrLog {
     /// Sets the verbosity level of messages that will be displayed
     pub fn verbosity(&mut self, verbosity: usize) -> &mut StdErrLog {
         let log_lvl = match verbosity {
-            0 => LogLevelFilter::Error,
-            1 => LogLevelFilter::Warn,
-            2 => LogLevelFilter::Info,
-            3 => LogLevelFilter::Debug,
-            _ => LogLevelFilter::Trace,
+            0 => LevelFilter::Error,
+            1 => LevelFilter::Warn,
+            2 => LevelFilter::Info,
+            3 => LevelFilter::Debug,
+            _ => LevelFilter::Trace,
         };
 
         self.verbosity = log_lvl;
@@ -426,9 +433,9 @@ impl StdErrLog {
         self
     }
 
-    fn log_level_filter(&self) -> LogLevelFilter {
+    fn log_level_filter(&self) -> LevelFilter {
         if self.quiet {
-            LogLevelFilter::Off
+            LevelFilter::Off
         } else {
             self.verbosity
         }
@@ -458,11 +465,8 @@ impl StdErrLog {
 
     /// sets the the logger as active
     pub fn init(&self) -> Result<(), log::SetLoggerError> {
-        log::set_logger(|max_log_level| {
-                            max_log_level.set(self.log_level_filter());
-
-                            Box::new(self.clone())
-                        })
+        log::set_max_level(self.log_level_filter());
+        log::set_boxed_logger(Box::new(self.clone()))
     }
 }
 
@@ -521,6 +525,6 @@ mod tests {
 
         super::new().module(module_path!()).init().unwrap();
 
-        assert_eq!(log::LogLevel::Error, log::max_log_level())
+        assert_eq!(log::Level::Error, log::max_level())
     }
 }

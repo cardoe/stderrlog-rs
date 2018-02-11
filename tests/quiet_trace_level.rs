@@ -17,5 +17,5 @@ fn quiet_trace_level() {
     debug!("debug msg");
     trace!("trace msg");
 
-    assert_eq!(log::LogLevelFilter::Off, log::max_log_level())
+    assert_eq!(log::LevelFilter::Off, log::max_level())
 }
