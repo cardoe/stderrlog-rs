@@ -14,7 +14,7 @@ version = "0.2.4-pre"
 
 [dependencies]
 chrono = "0.4"
-log = "0.3"
+log = "0.3, < 0.3.9"
 termcolor = "0.3.3"
 thread_local = "0.3"
 
