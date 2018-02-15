@@ -126,6 +126,15 @@
 //!     error!("error message");
 //! }
 //! ```
+//!
+//! ### Compatibility Policy
+//!
+//! `stderrlog` is serious about backwards compat. `stderrlog`
+//! pins the minimum required version of Rust in the CI build.
+//! Bumping the minimum version of Rust is a minor breaking
+//! change and requires a minor version to be bumped.
+//!
+//! The minimum supported Rust version for this release is 1.13.0.
 
 extern crate chrono;
 extern crate log;
