@@ -1,6 +1,16 @@
 # ChangeLog
 
+## 0.3.0
+
+### Changed
+
+- bump minimum Rust version to 1.16.0
+- allow all log 0.3.x releases
+- fix situations where including `a::b` also included `a::baz`
+
 ## 0.2.4
+
+### Changed
 
 - pinned log to 0.3.8 or older to retain Rust 1.13.0 support
 
