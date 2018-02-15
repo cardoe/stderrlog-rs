@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 0.2.4
+
+### Changed
+
+- pinned log to 0.3.8 or older to retain Rust 1.13.0 support
+
 ## 0.2.3
 
 ### Added
