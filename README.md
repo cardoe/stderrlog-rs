@@ -1,5 +1,5 @@
 [![Build status](https://travis-ci.org/cardoe/stderrlog-rs.svg?branch=master)](https://travis-ci.org/cardoe/stderrlog-rs)
-[![Rust version]( https://img.shields.io/badge/rust-1.13+-blue.svg)]()
+[![Rust version]( https://img.shields.io/badge/rust-1.16+-blue.svg)]()
 [![Documentation](https://docs.rs/stderrlog/badge.svg)](https://docs.rs/stderrlog)
 [![Latest version](https://img.shields.io/crates/v/stderrlog.svg)](https://crates.io/crates/stderrlog)
 [![All downloads](https://img.shields.io/crates/d/stderrlog.svg)](https://crates.io/crates/stderrlog)

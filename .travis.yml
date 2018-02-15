@@ -5,7 +5,7 @@ rust:
   - nightly
   - beta
   - stable
-  - 1.13.0 # currently oldest supported version
+  - 1.16.0 # currently oldest supported version
 script:
   - cargo build --verbose
   - cargo test --verbose
