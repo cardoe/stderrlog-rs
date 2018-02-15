@@ -190,7 +190,7 @@ impl Clone for StdErrLog {
 
 impl log::Log for StdErrLog {
     fn enabled(&self, metadata: &LogMetadata) -> bool {
-        metadata.level() <= self.log_level_filter()
+        metadata.level() <= self.log_level_filter() && self.includes_module(metadata.target())
     }
 
     fn log(&self, record: &log::LogRecord) {
@@ -200,45 +200,37 @@ impl log::Log for StdErrLog {
             return;
         }
 
-        // module we are logging for
-        let curr_mod = record.location().module_path();
-
-        // this logger only logs the requested modules unless the
-        // vector of modules is empty
-        // modules will have module::file in the module_path
-        if self.includes_module(curr_mod) {
-            let writer =
-                self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice)))));
-            let mut writer = writer.borrow_mut();
-            let color = match record.metadata().level() {
-                LogLevel::Error => Color::Red,
-                LogLevel::Warn => Color::Magenta,
-                LogLevel::Info => Color::Yellow,
-                LogLevel::Debug => Color::Cyan,
-                LogLevel::Trace => Color::Blue,
-            };
-            {
-                writer.get_mut().set_color(ColorSpec::new().set_fg(Some(color))).expect("failed to set color");
-            }
-            match self.timestamp {
-                Timestamp::Second => {
-                    let fmt = "%Y-%m-%dT%H:%M:%S%:z";
-                    let _ = write!(writer, "{} - ", Local::now().format(fmt));
-                },
-                Timestamp::Microsecond => {
-                    let fmt = "%Y-%m-%dT%H:%M:%S%.6f%:z";
-                    let _ = write!(writer, "{} - ", Local::now().format(fmt));
-                },
-                Timestamp::Nanosecond => {
-                    let fmt = "%Y-%m-%dT%H:%M:%S%.9f%:z";
-                    let _ = write!(writer, "{} - ", Local::now().format(fmt));
-                },
-                Timestamp::Off => {},
-            }
-            let _ = writeln!(writer, "{} - {}", record.level(), record.args());
-            {
-                writer.get_mut().reset().expect("failed to reset the color");
-            }
+        let writer =
+            self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice)))));
+        let mut writer = writer.borrow_mut();
+        let color = match record.metadata().level() {
+            LogLevel::Error => Color::Red,
+            LogLevel::Warn => Color::Magenta,
+            LogLevel::Info => Color::Yellow,
+            LogLevel::Debug => Color::Cyan,
+            LogLevel::Trace => Color::Blue,
+        };
+        {
+            writer.get_mut().set_color(ColorSpec::new().set_fg(Some(color))).expect("failed to set color");
+        }
+        match self.timestamp {
+            Timestamp::Second => {
+                let fmt = "%Y-%m-%dT%H:%M:%S%:z";
+                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+            },
+            Timestamp::Microsecond => {
+                let fmt = "%Y-%m-%dT%H:%M:%S%.6f%:z";
+                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+            },
+            Timestamp::Nanosecond => {
+                let fmt = "%Y-%m-%dT%H:%M:%S%.9f%:z";
+                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+            },
+            Timestamp::Off => {},
+        }
+        let _ = writeln!(writer, "{} - {}", record.level(), record.args());
+        {
+            writer.get_mut().reset().expect("failed to reset the color");
         }
     }
 }
@@ -290,10 +282,24 @@ impl StdErrLog {
 
     /// specify a module to allow to log to stderr
     pub fn module<T: Into<String>>(&mut self, module: T) -> &mut StdErrLog {
-        let to_insert = module.into();
+        self._module(module.into())
+    }
+
+    fn _module(&mut self, module: String) -> &mut StdErrLog {
         // If Ok, the module was already found
-        if let Err(i) = self.modules.binary_search(&to_insert) {
-            self.modules.insert(i, to_insert);
+        if let Err(i) = self.modules.binary_search(&module) {
+            // If a super-module of the current module already exists, don't insert this module
+            if i == 0 || !is_submodule(&self.modules[i - 1], &module) {
+                // Remove any submodules of the module we're inserting
+                let submodule_count = self.modules[i..]
+                    .iter()
+                    .take_while(|possible_submodule|
+                        is_submodule(&module, possible_submodule)
+                    )
+                    .count();
+                self.modules.drain(i..i+submodule_count);
+                self.modules.insert(i, module);
+            }
         }
         self
     }
@@ -334,7 +340,7 @@ impl StdErrLog {
                 false
             }
             Err(i) => {
-                module_path.starts_with(&self.modules[i - 1])
+                is_submodule(&self.modules[i - 1], module_path)
             }
         }
     }
@@ -360,8 +366,44 @@ pub fn new() -> StdErrLog {
     StdErrLog::new()
 }
 
+fn is_submodule(parent: &str, possible_child: &str) -> bool {
+    // Treat as bytes, because we'll be doing slicing, and we only care about ':' chars
+    let parent = parent.as_bytes();
+    let possible_child = possible_child.as_bytes();
+
+    // a longer module path cannot be a parent of a shorter module path
+    if parent.len() > possible_child.len() {
+        return false;
+    }
+
+    // If the path up to the parent isn't the same as the child,
+    if parent != &possible_child[..parent.len()] {
+        return false;
+    }
+
+    // Either the path is exactly the same, or the sub module should have a "::" after
+    // the length of the parent path. This prevents things like 'a::bad' being considered
+    // a submodule of 'a::b'
+    parent.len() == possible_child.len() ||
+        possible_child.get(parent.len()..parent.len() + 2) == Some(b"::")
+}
+
 #[cfg(test)]
 mod tests {
+    use super::is_submodule;
+
+    #[test]
+    fn submodule() {
+        assert!(is_submodule("a", "a::b::c::d"));
+        assert!(is_submodule("a::b::c", "a::b::c::d"));
+        assert!(is_submodule("a::b::c", "a::b::c"));
+        assert!(!is_submodule("a::b::c", "a::bad::c"));
+        assert!(!is_submodule("a::b::c", "a::b::cab"));
+        assert!(!is_submodule("a::b::c", "a::b::cab::d"));
+        assert!(!is_submodule("a::b::c", "a::b"));
+        assert!(!is_submodule("a::b::c", "a::bad"));
+    }
+
     #[test]
     fn test_default_level() {
         extern crate log;
