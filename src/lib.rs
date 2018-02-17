@@ -135,6 +135,25 @@
 //! change and requires a minor version to be bumped.
 //!
 //! The minimum supported Rust version for this release is 1.16.0.
+//!
+//! ### Module Level Logging
+//!
+//! `stderrlog` has the ability to limit the components which can log.
+//! Many crates use [log](https://docs.rs/log/*/log/) but you may not
+//! want their output in your application. For example
+//! [hyper](https://docs.rs/hyper/*/hyper/) makes heavy use of log but
+//! when your application receives `-vvvvv` to enable the `trace!()`
+//! messages you don't want the output of `hyper`'s `trace!()` level.
+//!
+//! To support this `stderrlog` includes a `module()` method allowing
+//! you to specify the modules that are allowed to log. The examples
+//! above use the `module_path!()` macro to enable logging only for
+//! the binary itself but none of its dependencies. To enable logging
+//! from extra crates just add another call to `module()` with the
+//! name of the crate. To enable logging for only a module within
+//! that crate specifiy `crate::module` to `module()`. crates and
+//! modules will be named the same way would would include them in
+//! source code with `use` (e.g. `some-crate` would be `some_crate`).
 
 extern crate chrono;
 extern crate log;
