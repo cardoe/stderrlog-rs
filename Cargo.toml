@@ -10,7 +10,7 @@ name = "stderrlog"
 readme = "README.md"
 changelog = "CHANGELOG.md"
 repository = "https://github.com/cardoe/stderrlog-rs"
-version = "0.2.4"
+version = "0.2.5-pre"
 
 [dependencies]
 chrono = "0.4"
