@@ -177,6 +177,7 @@ use log::{LogLevel, LogLevelFilter, LogMetadata};
 use std::cell::RefCell;
 use std::io::{self, Write};
 use std::fmt;
+use std::str::FromStr;
 use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
 use thread_local::CachedThreadLocal;
 
@@ -193,6 +194,28 @@ pub enum Timestamp {
     Microsecond,
     /// Timestamp with nanosecond granularity
     Nanosecond,
+}
+
+/// Provides a quick conversion of the following:
+///
+/// - "sec" -> `Timestamp::Second`
+/// - "ms" -> `Timestamp::Microsecond`
+/// - "ns" -> `Timestamp::Nanosecond`
+/// - "none" | "off" -> `Timestamp::Off`
+///
+/// This is provided as a helper for argument parsers
+impl FromStr for Timestamp {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "ns" => Ok(Timestamp::Nanosecond),
+            "ms" => Ok(Timestamp::Microsecond),
+            "sec" => Ok(Timestamp::Second),
+            "none" | "off" => Ok(Timestamp::Off),
+            _ => Err("invalid value".into()),
+        }
+    }
 }
 
 /// Data specific to this logger

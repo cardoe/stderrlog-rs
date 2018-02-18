@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 0.3.1
+
+### Added
+
+- Timestamp now implements FromStr to make arg parsers quicker to implement
+
 ## 0.3.0
 
 ### Added
