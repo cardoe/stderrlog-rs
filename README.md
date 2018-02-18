@@ -11,8 +11,13 @@ logs to `stderr` based on verbosity.
 
 ## Documentation
 
-[Module documentation with examples](https://docs.rs/stderrlog/)
-[binaries showing module level logging](https://github.com/cardoe/stderrlog-rs/tree/master/examples/large-example)
+For a working example for [StructOpt](https::/crates.io/crates/structopt),
+[clap](https://crates.io/crates/clap), and
+[docopt](https://crates.io/crates/docopt) please see the
+[crate level documentation](https://docs.rs/stderrlog/*/stderrlog/).
+
+For example binaries showing how
+[module level logging](https://github.com/cardoe/stderrlog-rs/tree/master/examples/large-example) works, please see the `large-example` crate in `examples/`.
 
 ## Supported Versions
 
@@ -47,87 +52,5 @@ struct Args {
     flag_v: usize,
     flag_q: bool,
     ...
-}
-```
-
-## Docopt Example
-
-```rust
-extern crate docopt;
-#[macro_use]
-extern crate log;
-extern crate rustc_serialize;
-extern crate stderrlog;
-
-use docopt::Docopt;
-
-const USAGE: &'static str = "
-Usage: program [-q] [-v...]
-";
-
-#[derive(Debug, RustcDecodable)]
-struct Args {
-    flag_q: bool,
-    flag_v: usize,
-}
-
-fn main() {
-    let args: Args = Docopt::new(USAGE)
-                            .and_then(|d| d.decode())
-                            .unwrap_or_else(|e| e.exit());
-
-    stderrlog::new()
-            .module(module_path!())
-            .quiet(args.flag_q)
-            .verbosity(args.flag_v)
-            .init()
-            .unwrap();
-    trace!("trace message");
-    debug!("debug message");
-    info!("info message");
-    warn!("warn message");
-    error!("error message");
-
-    // ...
-}
-```
-
-## clap Example
-
-```rust
-#[macro_use]
-extern crate clap;
-#[macro_use]
-extern crate log;
-extern crate stderrlog;
-
-use clap::{Arg, App};
-
-fn main() {
-    let m = App::new("stderrlog example")
-        .version(crate_version!())
-        .arg(Arg::with_name("verbosity")
-             .short("v")
-             .multiple(true)
-             .help("Increase message verbosity"))
-        .arg(Arg::with_name("quiet")
-             .short("q")
-             .help("Silence all output"))
-        .get_matches();
-
-    let verbose = m.occurrences_of("verbosity") as usize;
-    let quiet = m.is_present("quiet");
-
-    stderrlog::new()
-        .module(module_path!())
-        .quiet(quiet)
-        .verbosity(verbose)
-        .init()
-        .unwrap();
-    trace!("trace message");
-    debug!("debug message");
-    info!("info message");
-    warn!("warn message");
-    error!("error message");
 }
 ```
