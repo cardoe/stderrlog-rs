@@ -38,17 +38,14 @@ struct Opt {
 fn main() {
     let opt = Opt::from_args();
 
-    let mut sl = stderrlog::new();
-    sl.module(module_path!())
+    stderrlog::new()
+        .module(module_path!())
         .quiet(opt.quiet)
         .verbosity(opt.verbose)
-        .timestamp(opt.ts.unwrap_or(stderrlog::Timestamp::Off));
-
-    // enable all command line modules
-    for mod_name in opt.modules {
-        sl.module(mod_name);
-    }
-    sl.init().unwrap();
+        .timestamp(opt.ts.unwrap_or(stderrlog::Timestamp::Off))
+        .modules(opt.modules)
+        .init()
+        .unwrap();
 
     large_example::libfn();
     bar::barfn();
