@@ -2,6 +2,11 @@
 
 ## 0.3.0
 
+### Added
+
+- a large example under examples to detail how module level logging
+  works
+
 ### Changed
 
 - bump minimum Rust version to 1.16.0
