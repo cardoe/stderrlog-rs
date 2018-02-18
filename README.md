@@ -12,6 +12,12 @@ logs to `stderr` based on verbosity.
 ## Documentation
 
 [Module documentation with examples](https://docs.rs/stderrlog/)
+[binaries showing module level logging](https://github.com/cardoe/stderrlog-rs/tree/master/examples/large-example)
+
+## Supported Versions
+
+`stderrlog` 0.3.x supports 1) Rust 1.16.0 and newer 2) `log` 0.3.x
+`stderrlog` 0.2.x supports 1) Rust 1.13.0 and newer 2) `log` >= 0.3.0,  < 0.3.9
 
 ## Usage
 
