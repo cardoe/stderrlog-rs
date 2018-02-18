@@ -21,7 +21,7 @@
 //! fn main() {
 //!     stderrlog::new().module(module_path!()).init().unwrap();
 //!
-//!     info!("starting up");
+//!     error!("some failure");
 //!
 //!     // ...
 //! }
@@ -126,6 +126,7 @@
 //!     error!("error message");
 //! }
 //! ```
+//!
 //! ### `log` Compatibility
 //!
 //! The 0.3.x versions of `stderrlog` aim to provide compatibility with
