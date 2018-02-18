@@ -154,6 +154,13 @@
 //! that crate specifiy `crate::module` to `module()`. crates and
 //! modules will be named the same way would would include them in
 //! source code with `use` (e.g. `some-crate` would be `some_crate`).
+//!
+//! For a good example of how the module level logging works see the
+//! large-example project under examples, you'll want to run the
+//! following binaries to see all the examples:
+//! - cargo run --bin large-example --
+//! - cargo run --bin another --
+//! - cargo run --bin yet --
 
 extern crate chrono;
 extern crate log;
