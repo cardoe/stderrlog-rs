@@ -125,6 +125,7 @@
 //! extern crate stderrlog;
 //!
 //! use clap::{Arg, App};
+//! use std::str::FromStr;
 //!
 //! fn main() {
 //!     let m = App::new("stderrlog example")
@@ -145,17 +146,15 @@
 //!
 //!     let verbose = m.occurrences_of("verbosity") as usize;
 //!     let quiet = m.is_present("quiet");
-//!     let ts = match m.value_of("timestamp") {
-//!         Some("ns") => stderrlog::Timestamp::Nanosecond,
-//!         Some("ms") => stderrlog::Timestamp::Microsecond,
-//!         Some("sec") => stderrlog::Timestamp::Second,
-//!         Some("none") | None => stderrlog::Timestamp::Off,
-//!         Some(_) => clap::Error {
-//!             message: "invalid value for 'timestamp'".into(),
-//!             kind: clap::ErrorKind::InvalidValue,
-//!             info: None,
-//!         }.exit(),
-//!     };
+//!     let ts = m.value_of("timestamp").map(|v| {
+//!         stderrlog::Timestamp::from_str(v).unwrap_or_else(|_| {
+//!             clap::Error {
+//!                 message: "invalid value for 'timestamp'".into(),
+//!                 kind: clap::ErrorKind::InvalidValue,
+//!                 info: None,
+//!             }.exit()
+//!         })
+//!     }).unwrap_or(stderrlog::Timestamp::Off);
 //!
 //!     stderrlog::new()
 //!         .module(module_path!())

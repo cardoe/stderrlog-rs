@@ -7,6 +7,10 @@
 - Timestamp now implements FromStr to make arg parsers quicker to implement
 - Added a StructOpt example to the crate documentation
 
+### Changed
+
+- Improved clap example and added Timestamp support
+
 ## 0.3.0
 
 ### Added
