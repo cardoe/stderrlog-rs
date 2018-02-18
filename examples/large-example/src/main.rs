@@ -19,7 +19,7 @@ use structopt::StructOpt;
 
 /// A basic example
 #[derive(StructOpt, Debug)]
-#[structopt(name = "large-example")]
+#[structopt()]
 struct Opt {
     /// Silence all output
     #[structopt(short = "q", long = "quiet")]
@@ -30,6 +30,9 @@ struct Opt {
     /// Allow module to log
     #[structopt(short = "m", long = "module")]
     modules: Vec<String>,
+    /// Timestamp (sec, ms, ns, none)
+    #[structopt(short = "t", long = "timestamp")]
+    ts: Option<stderrlog::Timestamp>,
 }
 
 fn main() {
@@ -38,7 +41,8 @@ fn main() {
     let mut sl = stderrlog::new();
     sl.module(module_path!())
         .quiet(opt.quiet)
-        .verbosity(opt.verbose);
+        .verbosity(opt.verbose)
+        .timestamp(opt.ts.unwrap_or(stderrlog::Timestamp::Off));
 
     // enable all command line modules
     for mod_name in opt.modules {

@@ -5,6 +5,7 @@
 ### Added
 
 - Timestamp now implements FromStr to make arg parsers quicker to implement
+- Added a StructOpt example to the crate documentation
 
 ## 0.3.0
 

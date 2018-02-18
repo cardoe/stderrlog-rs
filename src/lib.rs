@@ -8,8 +8,9 @@
 
 //! A simple logger to provide symantics similar to what is expected
 //! of most UNIX utilities by logging to stderr and the higher the
-//! verbosity the higher the log level. Additionally it supports the
-//! ability to provide timestamps at different granularities.
+//! verbosity the higher the log level. It supports the
+//! ability to provide timestamps at different granularities. As
+//! well as colorizing the different log levels.
 //!
 //! ## Simple Use Case
 //!
@@ -24,6 +25,50 @@
 //!     error!("some failure");
 //!
 //!     // ...
+//! }
+//! ```
+//!
+//! # StructOpt Example
+//!
+//! ```
+//! #[macro_use]
+//! extern crate log;
+//! extern crate stderrlog;
+//! #[macro_use]
+//! extern crate structopt;
+//!
+//! use structopt::StructOpt;
+//!
+//! /// A StructOpt example
+//! #[derive(StructOpt, Debug)]
+//! #[structopt()]
+//! struct Opt {
+//!     /// Silence all output
+//!     #[structopt(short = "q", long = "quiet")]
+//!     quiet: bool,
+//!     /// Verbose mode (-v, -vv, -vvv, etc)
+//!     #[structopt(short = "v", long = "verbose", parse(from_occurrences))]
+//!     verbose: usize,
+//!     /// Timestamp (sec, ms, ns, none)
+//!     #[structopt(short = "t", long = "timestamp")]
+//!     ts: Option<stderrlog::Timestamp>,
+//! }
+//!
+//! fn main() {
+//!     let opt = Opt::from_args();
+//!
+//!     stderrlog::new()
+//!         .module(module_path!())
+//!         .quiet(opt.quiet)
+//!         .verbosity(opt.verbose)
+//!         .timestamp(opt.ts.unwrap_or(stderrlog::Timestamp::Off))
+//!         .init()
+//!         .unwrap();
+//!     trace!("trace message");
+//!     debug!("debug message");
+//!     info!("info message");
+//!     warn!("warn message");
+//!     error!("error message");
 //! }
 //! ```
 //!
