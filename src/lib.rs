@@ -126,8 +126,12 @@
 //!     error!("error message");
 //! }
 //! ```
+//! ### `log` Compatibility
 //!
-//! ### Compatibility Policy
+//! The 0.3.x versions of `stderrlog` aim to provide compatibility with
+//! applications using `log` 0.3.x
+//!
+//! ### Rust Compatibility
 //!
 //! `stderrlog` is serious about backwards compat. `stderrlog`
 //! pins the minimum required version of Rust in the CI build.
