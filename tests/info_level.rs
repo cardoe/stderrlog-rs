@@ -4,7 +4,11 @@ extern crate stderrlog;
 
 #[test]
 fn info_level() {
-    stderrlog::new().module(module_path!()).verbosity(2).init().unwrap();
+    stderrlog::new()
+        .module(module_path!())
+        .verbosity(2)
+        .init()
+        .unwrap();
 
     error!("error msg");
     warn!("warning msg");
@@ -12,5 +16,5 @@ fn info_level() {
     debug!("debug msg");
     trace!("trace msg");
 
-    assert_eq!(log::LogLevel::Info, log::max_log_level())
+    assert_eq!(log::Level::Info, log::max_level())
 }

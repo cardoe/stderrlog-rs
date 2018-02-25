@@ -12,7 +12,7 @@ static INIT_LOGGER: sync::Once = sync::ONCE_INIT;
 struct DelegatingLogger;
 
 impl Log for DelegatingLogger {
-    fn enabled(&self, metadata: &log::LogMetadata) -> bool {
+    fn enabled(&self, metadata: &log::Metadata) -> bool {
         LOGGER_INSTANCE.with(|instance| {
             let instance = instance.borrow();
             if let Some(ref instance) = *instance {
@@ -23,7 +23,7 @@ impl Log for DelegatingLogger {
         })
     }
 
-    fn log(&self, record: &log::LogRecord) {
+    fn log(&self, record: &log::Record) {
         LOGGER_INSTANCE.with(|instance| {
             let instance = instance.borrow();
             if let Some(ref instance) = *instance {
@@ -31,14 +31,21 @@ impl Log for DelegatingLogger {
             }
         });
     }
+
+    fn flush(&self) {
+        LOGGER_INSTANCE.with(|instance| {
+            let instance = instance.borrow();
+            if let Some(ref instance) = *instance {
+                instance.flush();
+            }
+        });
+    }
 }
 
 pub fn init() {
     INIT_LOGGER.call_once(|| {
-        log::set_logger(|max_level| {
-            max_level.set(log::LogLevelFilter::max());
-            Box::new(DelegatingLogger)
-        }).unwrap();
+        log::set_max_level(log::LevelFilter::max());
+        log::set_boxed_logger(Box::new(DelegatingLogger)).unwrap();
     });
 }
 

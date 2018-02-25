@@ -220,10 +220,10 @@ extern crate termcolor;
 extern crate thread_local;
 
 use chrono::Local;
-use log::{LogLevel, LogLevelFilter, LogMetadata};
+use log::{Level, LevelFilter, Log, Metadata, Record};
 use std::cell::RefCell;
-use std::io::{self, Write};
 use std::fmt;
+use std::io::{self, Write};
 use std::str::FromStr;
 use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
 use thread_local::CachedThreadLocal;
@@ -267,7 +267,7 @@ impl FromStr for Timestamp {
 
 /// Data specific to this logger
 pub struct StdErrLog {
-    verbosity: LogLevelFilter,
+    verbosity: LevelFilter,
     quiet: bool,
     timestamp: Timestamp,
     modules: Vec<String>,
@@ -293,55 +293,70 @@ impl Clone for StdErrLog {
         StdErrLog {
             modules: self.modules.clone(),
             writer: CachedThreadLocal::new(),
-            .. *self
+            ..*self
         }
     }
 }
 
-impl log::Log for StdErrLog {
-    fn enabled(&self, metadata: &LogMetadata) -> bool {
+impl Log for StdErrLog {
+    fn enabled(&self, metadata: &Metadata) -> bool {
         metadata.level() <= self.log_level_filter() && self.includes_module(metadata.target())
     }
 
-    fn log(&self, record: &log::LogRecord) {
-
+    fn log(&self, record: &Record) {
         // if logging isn't enabled for this level do a quick out
         if !self.enabled(record.metadata()) {
             return;
         }
 
-        let writer =
-            self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice)))));
+        let writer = self.writer.get_or(|| {
+            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(
+                self.color_choice,
+            ))))
+        });
         let mut writer = writer.borrow_mut();
         let color = match record.metadata().level() {
-            LogLevel::Error => Color::Red,
-            LogLevel::Warn => Color::Magenta,
-            LogLevel::Info => Color::Yellow,
-            LogLevel::Debug => Color::Cyan,
-            LogLevel::Trace => Color::Blue,
+            Level::Error => Color::Red,
+            Level::Warn => Color::Magenta,
+            Level::Info => Color::Yellow,
+            Level::Debug => Color::Cyan,
+            Level::Trace => Color::Blue,
         };
         {
-            writer.get_mut().set_color(ColorSpec::new().set_fg(Some(color))).expect("failed to set color");
+            writer
+                .get_mut()
+                .set_color(ColorSpec::new().set_fg(Some(color)))
+                .expect("failed to set color");
         }
         match self.timestamp {
             Timestamp::Second => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%:z";
                 let _ = write!(writer, "{} - ", Local::now().format(fmt));
-            },
+            }
             Timestamp::Microsecond => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%.6f%:z";
                 let _ = write!(writer, "{} - ", Local::now().format(fmt));
-            },
+            }
             Timestamp::Nanosecond => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%.9f%:z";
                 let _ = write!(writer, "{} - ", Local::now().format(fmt));
-            },
-            Timestamp::Off => {},
+            }
+            Timestamp::Off => {}
         }
         let _ = writeln!(writer, "{} - {}", record.level(), record.args());
         {
             writer.get_mut().reset().expect("failed to reset the color");
         }
+    }
+
+    fn flush(&self) {
+        let writer = self.writer.get_or(|| {
+            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(
+                self.color_choice,
+            ))))
+        });
+        let mut writer = writer.borrow_mut();
+        writer.flush().ok();
     }
 }
 
@@ -349,7 +364,7 @@ impl StdErrLog {
     /// creates a new stderr logger
     pub fn new() -> StdErrLog {
         StdErrLog {
-            verbosity: LogLevelFilter::Error,
+            verbosity: LevelFilter::Error,
             quiet: false,
             timestamp: Timestamp::Off,
             modules: Vec::new(),
@@ -361,11 +376,11 @@ impl StdErrLog {
     /// Sets the verbosity level of messages that will be displayed
     pub fn verbosity(&mut self, verbosity: usize) -> &mut StdErrLog {
         let log_lvl = match verbosity {
-            0 => LogLevelFilter::Error,
-            1 => LogLevelFilter::Warn,
-            2 => LogLevelFilter::Info,
-            3 => LogLevelFilter::Debug,
-            _ => LogLevelFilter::Trace,
+            0 => LevelFilter::Error,
+            1 => LevelFilter::Warn,
+            2 => LevelFilter::Info,
+            3 => LevelFilter::Debug,
+            _ => LevelFilter::Trace,
         };
 
         self.verbosity = log_lvl;
@@ -403,11 +418,9 @@ impl StdErrLog {
                 // Remove any submodules of the module we're inserting
                 let submodule_count = self.modules[i..]
                     .iter()
-                    .take_while(|possible_submodule|
-                        is_submodule(&module, possible_submodule)
-                    )
+                    .take_while(|possible_submodule| is_submodule(&module, possible_submodule))
                     .count();
-                self.modules.drain(i..i+submodule_count);
+                self.modules.drain(i..i + submodule_count);
                 self.modules.insert(i, module);
             }
         }
@@ -415,18 +428,19 @@ impl StdErrLog {
     }
 
     /// specifiy modules to allow to log to stderr
-    pub fn modules<T: Into<String>, I: IntoIterator<Item = T>>(&mut self,
-                                                               modules: I)
-                                                               -> &mut StdErrLog {
+    pub fn modules<T: Into<String>, I: IntoIterator<Item = T>>(
+        &mut self,
+        modules: I,
+    ) -> &mut StdErrLog {
         for module in modules {
             self.module(module);
         }
         self
     }
 
-    fn log_level_filter(&self) -> LogLevelFilter {
+    fn log_level_filter(&self) -> LevelFilter {
         if self.quiet {
-            LogLevelFilter::Off
+            LevelFilter::Off
         } else {
             self.verbosity
         }
@@ -440,7 +454,9 @@ impl StdErrLog {
         // if a prefix of module_path is in `self.modules`, it must
         // be located at the first location before
         // where module_path would be.
-        match self.modules.binary_search_by(|module| module.as_str().cmp(&module_path)) {
+        match self.modules
+            .binary_search_by(|module| module.as_str().cmp(&module_path))
+        {
             Ok(_) => {
                 // Found exact module: return true
                 true
@@ -449,19 +465,14 @@ impl StdErrLog {
                 // if there's no item which would be located before module_path, no prefix is there
                 false
             }
-            Err(i) => {
-                is_submodule(&self.modules[i - 1], module_path)
-            }
+            Err(i) => is_submodule(&self.modules[i - 1], module_path),
         }
     }
 
     /// sets the the logger as active
     pub fn init(&self) -> Result<(), log::SetLoggerError> {
-        log::set_logger(|max_log_level| {
-                            max_log_level.set(self.log_level_filter());
-
-                            Box::new(self.clone())
-                        })
+        log::set_max_level(self.log_level_filter());
+        log::set_boxed_logger(Box::new(self.clone()))
     }
 }
 
@@ -494,8 +505,8 @@ fn is_submodule(parent: &str, possible_child: &str) -> bool {
     // Either the path is exactly the same, or the sub module should have a "::" after
     // the length of the parent path. This prevents things like 'a::bad' being considered
     // a submodule of 'a::b'
-    parent.len() == possible_child.len() ||
-        possible_child.get(parent.len()..parent.len() + 2) == Some(b"::")
+    parent.len() == possible_child.len()
+        || possible_child.get(parent.len()..parent.len() + 2) == Some(b"::")
 }
 
 #[cfg(test)]
@@ -520,6 +531,6 @@ mod tests {
 
         super::new().module(module_path!()).init().unwrap();
 
-        assert_eq!(log::LogLevel::Error, log::max_log_level())
+        assert_eq!(log::Level::Error, log::max_level())
     }
 }
