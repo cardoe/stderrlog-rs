@@ -31,7 +31,11 @@ fn main() {
         .and_then(|d| d.argv(env::args().into_iter()).decode())
         .unwrap_or_else(|e| e.exit());
 
-    stderrlog::new().verbosity(args.flag_v).quiet(args.flag_q).init().unwrap();
+    stderrlog::new()
+        .verbosity(args.flag_v)
+        .quiet(args.flag_q)
+        .init()
+        .unwrap();
 
     error!("error msg");
     warn!("warning msg");

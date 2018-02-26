@@ -1,7 +1,7 @@
 #![feature(test)]
-extern crate test;
-extern crate stderrlog;
 extern crate libc;
+extern crate stderrlog;
+extern crate test;
 
 #[macro_use]
 extern crate log;
@@ -19,6 +19,7 @@ fn init_logger() {
             .timestamp(stderrlog::Timestamp::Second)
             .verbosity(10)
             .module(module_path!())
-            .init().unwrap();
+            .init()
+            .unwrap();
     });
 }
