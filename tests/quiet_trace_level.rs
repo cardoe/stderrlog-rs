@@ -4,7 +4,12 @@ extern crate stderrlog;
 
 #[test]
 fn quiet_trace_level() {
-    stderrlog::new().module(module_path!()).verbosity(4).quiet(true).init().unwrap();
+    stderrlog::new()
+        .module(module_path!())
+        .verbosity(4)
+        .quiet(true)
+        .init()
+        .unwrap();
 
     error!("error msg");
     warn!("warning msg");
@@ -12,5 +17,5 @@ fn quiet_trace_level() {
     debug!("debug msg");
     trace!("trace msg");
 
-    assert_eq!(log::LogLevelFilter::Off, log::max_log_level())
+    assert_eq!(log::LevelFilter::Off, log::max_level())
 }

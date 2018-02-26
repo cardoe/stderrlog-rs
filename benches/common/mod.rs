@@ -19,7 +19,12 @@ fn complex_format(b: &mut Bencher) {
     init_logger();
     with_redirected_stderr(panic::AssertUnwindSafe(|| {
         b.iter(|| {
-            debug!("{}, {:#?}, {:b}", 0.1f64, vec![99, 1, 5, 100, 1, 0, 8], 0xffb1aa)
+            debug!(
+                "{}, {:#?}, {:b}",
+                0.1f64,
+                vec![99, 1, 5, 100, 1, 0, 8],
+                0xffb1aa
+            )
         })
     }));
 }

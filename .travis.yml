@@ -5,10 +5,10 @@ rust:
   - nightly
   - beta
   - stable
-  - 1.16.0 # currently oldest supported version, but structopt example fails to build until 1.22.1 so skip tests
+  - 1.20.0 # currently oldest supported version, but structopt example fails to build until 1.22.1 so skip tests
 script:
   - cargo build --verbose
-  - if [ ${TRAVIS_RUST_VERSION} != "1.16.0" ]; then
+  - if [ ${TRAVIS_RUST_VERSION} != "1.20.0" ]; then
         cargo test --verbose;
     fi
   - if [ ${TRAVIS_RUST_VERSION} = "nightly" ]; then

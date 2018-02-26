@@ -1,6 +1,6 @@
-extern crate stderrlog;
 #[macro_use]
 extern crate log;
+extern crate stderrlog;
 
 mod utils;
 
@@ -15,7 +15,7 @@ mod included_not {
         logger.module("module_inclusion::included");
         logger.verbosity(10);
         utils::set_logger(logger);
-        assert!(!log_enabled!(log::LogLevel::Error));
+        assert!(!log_enabled!(log::Level::Error));
     }
 }
 
@@ -32,7 +32,7 @@ mod included {
             logger.module("module_inclusion::included::a");
             logger.verbosity(10);
             utils::set_logger(logger);
-            assert!(log_enabled!(log::LogLevel::Error));
+            assert!(log_enabled!(log::Level::Error));
         }
         #[test]
         fn sub_and_supermodule_included() {
@@ -42,7 +42,7 @@ mod included {
             logger.module("module_inclusion::included");
             logger.verbosity(10);
             utils::set_logger(logger);
-            assert!(log_enabled!(log::LogLevel::Error));
+            assert!(log_enabled!(log::Level::Error));
         }
     }
 }

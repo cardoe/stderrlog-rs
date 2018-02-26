@@ -4,23 +4,29 @@ extern crate clap;
 extern crate log;
 extern crate stderrlog;
 
-use clap::{Arg, App};
+use clap::{App, Arg};
 
 fn main() {
     let m = App::new("stderrlog example")
         .version(crate_version!())
-        .arg(Arg::with_name("verbosity")
-             .short("v")
-             .multiple(true)
-             .help("Increase message verbosity"))
-        .arg(Arg::with_name("quiet")
-             .short("q")
-             .help("Silence all output"))
-        .arg(Arg::with_name("timestamp")
-             .short("t")
-             .help("prepend log lines with a timestamp")
-             .takes_value(true)
-             .possible_values(&["none", "sec", "ms", "ns"]))
+        .arg(
+            Arg::with_name("verbosity")
+                .short("v")
+                .multiple(true)
+                .help("Increase message verbosity"),
+        )
+        .arg(
+            Arg::with_name("quiet")
+                .short("q")
+                .help("Silence all output"),
+        )
+        .arg(
+            Arg::with_name("timestamp")
+                .short("t")
+                .help("prepend log lines with a timestamp")
+                .takes_value(true)
+                .possible_values(&["none", "sec", "ms", "ns"]),
+        )
         .get_matches();
 
     let verbose = m.occurrences_of("verbosity") as usize;
