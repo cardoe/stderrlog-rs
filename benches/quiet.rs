@@ -20,6 +20,7 @@ fn init_logger() {
             .verbosity(10)
             .quiet(true)
             .module(module_path!())
-            .init().unwrap();
+            .init()
+            .unwrap();
     });
 }

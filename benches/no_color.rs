@@ -21,6 +21,7 @@ fn init_logger() {
             .verbosity(10)
             .color(termcolor::ColorChoice::Never)
             .module(module_path!())
-            .init().unwrap();
+            .init()
+            .unwrap();
     });
 }

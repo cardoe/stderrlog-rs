@@ -23,6 +23,7 @@ fn init_logger() {
             .timestamp(stderrlog::Timestamp::Second)
             .verbosity(10)
             .modules(other_modules)
-            .init().unwrap();
+            .init()
+            .unwrap();
     });
 }

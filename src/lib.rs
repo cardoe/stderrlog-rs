@@ -222,13 +222,13 @@ extern crate thread_local;
 use chrono::Local;
 use log::{LogLevel, LogLevelFilter, LogMetadata};
 use std::cell::RefCell;
-use std::io::{self, Write};
 use std::fmt;
+use std::io::{self, Write};
 use std::str::FromStr;
 use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
-use thread_local::CachedThreadLocal;
 
 pub use termcolor::ColorChoice;
+use thread_local::CachedThreadLocal;
 
 /// State of the timestampping in the logger.
 #[derive(Clone, Copy, Debug)]
@@ -293,7 +293,7 @@ impl Clone for StdErrLog {
         StdErrLog {
             modules: self.modules.clone(),
             writer: CachedThreadLocal::new(),
-            .. *self
+            ..*self
         }
     }
 }
@@ -310,8 +310,9 @@ impl log::Log for StdErrLog {
             return;
         }
 
-        let writer =
-            self.writer.get_or(|| Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice)))));
+        let writer = self.writer.get_or(|| {
+            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice))))
+        });
         let mut writer = writer.borrow_mut();
         let color = match record.metadata().level() {
             LogLevel::Error => Color::Red,
@@ -321,22 +322,25 @@ impl log::Log for StdErrLog {
             LogLevel::Trace => Color::Blue,
         };
         {
-            writer.get_mut().set_color(ColorSpec::new().set_fg(Some(color))).expect("failed to set color");
+            writer
+                .get_mut()
+                .set_color(ColorSpec::new().set_fg(Some(color)))
+                .expect("failed to set color");
         }
         match self.timestamp {
             Timestamp::Second => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%:z";
                 let _ = write!(writer, "{} - ", Local::now().format(fmt));
-            },
+            }
             Timestamp::Microsecond => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%.6f%:z";
                 let _ = write!(writer, "{} - ", Local::now().format(fmt));
-            },
+            }
             Timestamp::Nanosecond => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%.9f%:z";
                 let _ = write!(writer, "{} - ", Local::now().format(fmt));
-            },
-            Timestamp::Off => {},
+            }
+            Timestamp::Off => {}
         }
         let _ = writeln!(writer, "{} - {}", record.level(), record.args());
         {
@@ -403,11 +407,9 @@ impl StdErrLog {
                 // Remove any submodules of the module we're inserting
                 let submodule_count = self.modules[i..]
                     .iter()
-                    .take_while(|possible_submodule|
-                        is_submodule(&module, possible_submodule)
-                    )
+                    .take_while(|possible_submodule| is_submodule(&module, possible_submodule))
                     .count();
-                self.modules.drain(i..i+submodule_count);
+                self.modules.drain(i..i + submodule_count);
                 self.modules.insert(i, module);
             }
         }
@@ -440,7 +442,8 @@ impl StdErrLog {
         // if a prefix of module_path is in `self.modules`, it must
         // be located at the first location before
         // where module_path would be.
-        match self.modules.binary_search_by(|module| module.as_str().cmp(&module_path)) {
+        match self.modules
+                  .binary_search_by(|module| module.as_str().cmp(&module_path)) {
             Ok(_) => {
                 // Found exact module: return true
                 true
@@ -449,9 +452,7 @@ impl StdErrLog {
                 // if there's no item which would be located before module_path, no prefix is there
                 false
             }
-            Err(i) => {
-                is_submodule(&self.modules[i - 1], module_path)
-            }
+            Err(i) => is_submodule(&self.modules[i - 1], module_path),
         }
     }
 
@@ -495,7 +496,7 @@ fn is_submodule(parent: &str, possible_child: &str) -> bool {
     // the length of the parent path. This prevents things like 'a::bad' being considered
     // a submodule of 'a::b'
     parent.len() == possible_child.len() ||
-        possible_child.get(parent.len()..parent.len() + 2) == Some(b"::")
+    possible_child.get(parent.len()..parent.len() + 2) == Some(b"::")
 }
 
 #[cfg(test)]
