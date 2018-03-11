@@ -226,9 +226,8 @@ use std::fmt;
 use std::io::{self, Write};
 use std::str::FromStr;
 use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
-use thread_local::CachedThreadLocal;
-
 pub use termcolor::ColorChoice;
+use thread_local::CachedThreadLocal;
 
 /// State of the timestampping in the logger.
 #[derive(Clone, Copy, Debug)]

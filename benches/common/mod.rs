@@ -1,8 +1,7 @@
+use init_logger;
 use std::panic;
 use test::Bencher;
-
 use util::with_redirected_stderr;
-use init_logger;
 
 #[bench]
 fn simple_string(b: &mut Bencher) {

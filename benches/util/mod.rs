@@ -1,7 +1,7 @@
-use std::panic;
+use libc;
 use std::fs::File;
 use std::os::unix::io::AsRawFd;
-use libc;
+use std::panic;
 
 pub fn with_redirected_stderr<T, F>(f: F) -> T
 where

@@ -1,7 +1,7 @@
-use std::sync;
-use std::cell::RefCell;
-use stderrlog::StdErrLog;
 use log::{self, Log};
+use std::cell::RefCell;
+use std::sync;
+use stderrlog::StdErrLog;
 
 thread_local! {
     pub static LOGGER_INSTANCE: RefCell<Option<StdErrLog>> = RefCell::new(None);
