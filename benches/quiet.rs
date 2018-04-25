@@ -1,13 +1,13 @@
 #![feature(test)]
-extern crate test;
-extern crate stderrlog;
 extern crate libc;
+extern crate stderrlog;
+extern crate test;
 
 #[macro_use]
 extern crate log;
 
-mod util;
 mod common;
+mod util;
 
 use std::sync;
 

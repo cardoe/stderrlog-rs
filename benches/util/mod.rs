@@ -4,8 +4,9 @@ use std::os::unix::io::AsRawFd;
 use std::panic;
 
 pub fn with_redirected_stderr<T, F>(f: F) -> T
-    where F: FnOnce() -> T,
-          F: panic::UnwindSafe
+where
+    F: FnOnce() -> T,
+    F: panic::UnwindSafe,
 {
     let file = File::create("/dev/null").unwrap();
     let fd = file.as_raw_fd();

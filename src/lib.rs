@@ -310,7 +310,9 @@ impl Log for StdErrLog {
         }
 
         let writer = self.writer.get_or(|| {
-            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice))))
+            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(
+                self.color_choice,
+            ))))
         });
         let mut writer = writer.borrow_mut();
         let color = match record.metadata().level() {
@@ -349,7 +351,9 @@ impl Log for StdErrLog {
 
     fn flush(&self) {
         let writer = self.writer.get_or(|| {
-            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(self.color_choice))))
+            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(
+                self.color_choice,
+            ))))
         });
         let mut writer = writer.borrow_mut();
         writer.flush().ok();
@@ -424,9 +428,10 @@ impl StdErrLog {
     }
 
     /// specifiy modules to allow to log to stderr
-    pub fn modules<T: Into<String>, I: IntoIterator<Item = T>>(&mut self,
-                                                               modules: I)
-                                                               -> &mut StdErrLog {
+    pub fn modules<T: Into<String>, I: IntoIterator<Item = T>>(
+        &mut self,
+        modules: I,
+    ) -> &mut StdErrLog {
         for module in modules {
             self.module(module);
         }
@@ -450,7 +455,8 @@ impl StdErrLog {
         // be located at the first location before
         // where module_path would be.
         match self.modules
-                  .binary_search_by(|module| module.as_str().cmp(&module_path)) {
+            .binary_search_by(|module| module.as_str().cmp(&module_path))
+        {
             Ok(_) => {
                 // Found exact module: return true
                 true
@@ -499,8 +505,8 @@ fn is_submodule(parent: &str, possible_child: &str) -> bool {
     // Either the path is exactly the same, or the sub module should have a "::" after
     // the length of the parent path. This prevents things like 'a::bad' being considered
     // a submodule of 'a::b'
-    parent.len() == possible_child.len() ||
-    possible_child.get(parent.len()..parent.len() + 2) == Some(b"::")
+    parent.len() == possible_child.len()
+        || possible_child.get(parent.len()..parent.len() + 2) == Some(b"::")
 }
 
 #[cfg(test)]

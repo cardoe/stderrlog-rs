@@ -14,44 +14,44 @@ struct DelegatingLogger;
 impl Log for DelegatingLogger {
     fn enabled(&self, metadata: &log::Metadata) -> bool {
         LOGGER_INSTANCE.with(|instance| {
-                                 let instance = instance.borrow();
-                                 if let Some(ref instance) = *instance {
-                                     instance.enabled(metadata)
-                                 } else {
-                                     false
-                                 }
-                             })
+            let instance = instance.borrow();
+            if let Some(ref instance) = *instance {
+                instance.enabled(metadata)
+            } else {
+                false
+            }
+        })
     }
 
     fn log(&self, record: &log::Record) {
         LOGGER_INSTANCE.with(|instance| {
-                                 let instance = instance.borrow();
-                                 if let Some(ref instance) = *instance {
-                                     instance.log(record);
-                                 }
-                             });
+            let instance = instance.borrow();
+            if let Some(ref instance) = *instance {
+                instance.log(record);
+            }
+        });
     }
 
     fn flush(&self) {
         LOGGER_INSTANCE.with(|instance| {
-                                 let instance = instance.borrow();
-                                 if let Some(ref instance) = *instance {
-                                     instance.flush();
-                                 }
-                             });
+            let instance = instance.borrow();
+            if let Some(ref instance) = *instance {
+                instance.flush();
+            }
+        });
     }
 }
 
 pub fn init() {
     INIT_LOGGER.call_once(|| {
-                              log::set_max_level(log::LevelFilter::max());
-                              log::set_boxed_logger(Box::new(DelegatingLogger)).unwrap();
-                          });
+        log::set_max_level(log::LevelFilter::max());
+        log::set_boxed_logger(Box::new(DelegatingLogger)).unwrap();
+    });
 }
 
 pub fn set_logger(logger: StdErrLog) {
     LOGGER_INSTANCE.with(|instance| {
-                             let mut instance = instance.borrow_mut();
-                             *instance = Some(logger);
-                         });
+        let mut instance = instance.borrow_mut();
+        *instance = Some(logger);
+    });
 }
