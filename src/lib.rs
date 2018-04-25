@@ -214,6 +214,8 @@
 //! - `cargo run --bin another --`
 //! - `cargo run --bin yet --`
 
+#![doc(html_root_url = "https://docs.rs/stderrlog/0.4.0")]
+
 extern crate chrono;
 extern crate log;
 extern crate termcolor;
