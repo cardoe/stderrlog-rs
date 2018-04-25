@@ -2,12 +2,6 @@
 
 ## 0.4.0
 
-### Changed
-
-- Full use and depend on log 0.4.1.
-
-## 0.3.1
-
 ### Added
 
 - Timestamp now implements FromStr to make arg parsers quicker to implement
@@ -16,6 +10,7 @@
 ### Changed
 
 - Improved clap example and added Timestamp support
+- Full use and depend on log 0.4.1.
 
 ## 0.3.0
 
