@@ -21,9 +21,15 @@ For example binaries showing how
 
 ## Supported Versions
 
-`stderrlog` 0.4.x supports 1) Rust 1.16.0 and newer 2) `log` >= 0.4.1
-`stderrlog` 0.3.x supports 1) Rust 1.16.0 and newer 2) `log` 0.3.x
-`stderrlog` 0.2.x supports 1) Rust 1.13.0 and newer 2) `log` >= 0.3.0,  < 0.3.9
+* `stderrlog` 0.4.x supports
+  1) Rust 1.16.0 and newer
+  2) `log` >= 0.4.1
+* `stderrlog` 0.3.x supports
+  1) Rust 1.16.0 and newer
+  2) `log` 0.3.x
+* `stderrlog` 0.2.x supports
+  1) Rust 1.13.0 and newer
+  2) `log` >= 0.3.0,  < 0.3.9
 
 ## Usage
 
