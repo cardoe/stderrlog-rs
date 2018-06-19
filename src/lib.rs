@@ -239,6 +239,8 @@ pub enum Timestamp {
     Off,
     /// Timestamp with second granularity
     Second,
+    /// Timestamp with millisecond granularity
+    Millisecond,
     /// Timestamp with microsecond granularity
     Microsecond,
     /// Timestamp with nanosecond granularity
@@ -248,7 +250,8 @@ pub enum Timestamp {
 /// Provides a quick conversion of the following:
 ///
 /// - "sec" -> `Timestamp::Second`
-/// - "ms" -> `Timestamp::Microsecond`
+/// - "ms" -> `Timestamp::Millisecond`
+/// - "us" -> `Timestamp::Microsecond`
 /// - "ns" -> `Timestamp::Nanosecond`
 /// - "none" | "off" -> `Timestamp::Off`
 ///
@@ -259,7 +262,8 @@ impl FromStr for Timestamp {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "ns" => Ok(Timestamp::Nanosecond),
-            "ms" => Ok(Timestamp::Microsecond),
+            "ms" => Ok(Timestamp::Millisecond),
+            "us" => Ok(Timestamp::Microsecond),
             "sec" => Ok(Timestamp::Second),
             "none" | "off" => Ok(Timestamp::Off),
             _ => Err("invalid value".into()),
@@ -333,6 +337,10 @@ impl Log for StdErrLog {
         match self.timestamp {
             Timestamp::Second => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%:z";
+                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+            }
+            Timestamp::Millisecond => {
+                let fmt = "%Y-%m-%dT%H:%M:%S%.3f%:z";
                 let _ = write!(writer, "{} - ", Local::now().format(fmt));
             }
             Timestamp::Microsecond => {

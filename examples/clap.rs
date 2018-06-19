@@ -34,7 +34,7 @@ fn main() {
                 .short("t")
                 .help("prepend log lines with a timestamp")
                 .takes_value(true)
-                .possible_values(&["none", "sec", "ms", "ns"]),
+                .possible_values(&["none", "sec", "ms", "us", "ns"]),
         )
         .get_matches();
 

@@ -25,7 +25,7 @@ fn main() {
                 .short("t")
                 .help("prepend log lines with a timestamp")
                 .takes_value(true)
-                .possible_values(&["none", "sec", "ms", "ns"]),
+                .possible_values(&["none", "sec", "ms", "us", "ns"]),
         )
         .get_matches();
 
@@ -33,7 +33,8 @@ fn main() {
     let quiet = m.is_present("quiet");
     let ts = match m.value_of("timestamp") {
         Some("ns") => stderrlog::Timestamp::Nanosecond,
-        Some("ms") => stderrlog::Timestamp::Microsecond,
+        Some("ms") => stderrlog::Timestamp::Millisecond,
+        Some("us") => stderrlog::Timestamp::Microsecond,
         Some("sec") => stderrlog::Timestamp::Second,
         Some("none") | None => stderrlog::Timestamp::Off,
         Some(_) => clap::Error {
