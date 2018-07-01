@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 0.4.1
+
+### Added
+
+- Support millisecond timestamp resolution
+
 ## 0.4.0
 
 ### Added
