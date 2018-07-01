@@ -30,7 +30,7 @@ struct Opt {
     /// Allow module to log
     #[structopt(short = "m", long = "module")]
     modules: Vec<String>,
-    /// Timestamp (sec, ms, ns, none)
+    /// Timestamp (sec, ms, us, ns, none)
     #[structopt(short = "t", long = "timestamp")]
     ts: Option<stderrlog::Timestamp>,
 }

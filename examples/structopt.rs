@@ -24,7 +24,7 @@ struct Opt {
     /// Verbose mode (-v, -vv, -vvv, etc.)
     #[structopt(short = "v", long = "verbose", parse(from_occurrences))]
     verbose: usize,
-    /// Timestamp (sec, ms, ns, none)
+    /// Timestamp (sec, ms, us, ns, none)
     #[structopt(short = "t", long = "timestamp")]
     ts: Option<stderrlog::Timestamp>,
 }
