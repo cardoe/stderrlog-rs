@@ -13,6 +13,7 @@ repository = "https://github.com/cardoe/stderrlog-rs"
 version = "0.4.1-pre"
 
 [badges]
+appveyor = { repository = "cardoe/stderrlog-rs", branch = "master", service = "github" }
 travis-ci = { repository = "cardoe/stderrlog-rs", branch = "master" }
 is-it-maintained-issue-resolution = { repository = "cardoe/stderrlog-rs" }
 is-it-maintained-open-issues = { repository = "cardoe/stderrlog-rs" }
