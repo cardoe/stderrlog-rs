@@ -12,6 +12,12 @@ changelog = "CHANGELOG.md"
 repository = "https://github.com/cardoe/stderrlog-rs"
 version = "0.4.1-pre"
 
+[badges]
+travis-ci = { repository = "cardoe/stderrlog-rs", branch = "master" }
+is-it-maintained-issue-resolution = { repository = "cardoe/stderrlog-rs" }
+is-it-maintained-open-issues = { repository = "cardoe/stderrlog-rs" }
+maintenance = { status = "passively-maintained" }
+
 [dependencies]
 chrono = "0.4"
 log = { version = "0.4.1", features = ["std"] }

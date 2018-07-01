@@ -1,4 +1,6 @@
 [![Build status](https://travis-ci.org/cardoe/stderrlog-rs.svg?branch=master)](https://travis-ci.org/cardoe/stderrlog-rs)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/cardoe/stderrlog-rs.svg)](http://isitmaintained.com/project/cardoe/stderrlog-rs "Average time to resolve an issue")
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/cardoe/stderrlog-rs.svg)](http://isitmaintained.com/project/cardoe/stderrlog-rs "Percentage of issues still open")
 [![Rust version]( https://img.shields.io/badge/rust-1.16+-blue.svg)]()
 [![Documentation](https://docs.rs/stderrlog/badge.svg)](https://docs.rs/stderrlog)
 [![Latest version](https://img.shields.io/crates/v/stderrlog.svg)](https://crates.io/crates/stderrlog)
