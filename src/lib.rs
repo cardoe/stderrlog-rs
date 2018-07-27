@@ -279,7 +279,7 @@ pub struct StdErrLog {
     quiet: bool,
     timestamp: Timestamp,
     modules: Vec<String>,
-    writer: CachedThreadLocal<RefCell<io::LineWriter<StandardStream>>>,
+    writer: CachedThreadLocal<RefCell<StandardStream>>,
     color_choice: ColorChoice,
 }
 
@@ -317,12 +317,10 @@ impl Log for StdErrLog {
             return;
         }
 
-        let writer = self.writer.get_or(|| {
-            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(
-                self.color_choice,
-            ))))
-        });
-        let mut writer = writer.borrow_mut();
+        let writer = self.writer
+            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(self.color_choice))));
+        let writer = writer.borrow_mut();
+        let mut writer = io::LineWriter::new(writer.lock());
         let color = match record.metadata().level() {
             Level::Error => Color::Red,
             Level::Warn => Color::Magenta,
@@ -362,11 +360,8 @@ impl Log for StdErrLog {
     }
 
     fn flush(&self) {
-        let writer = self.writer.get_or(|| {
-            Box::new(RefCell::new(io::LineWriter::new(StandardStream::stderr(
-                self.color_choice,
-            ))))
-        });
+        let writer = self.writer
+            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(self.color_choice))));
         let mut writer = writer.borrow_mut();
         writer.flush().ok();
     }
