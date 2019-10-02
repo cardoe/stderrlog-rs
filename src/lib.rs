@@ -218,11 +218,13 @@
 
 #![doc(html_root_url = "https://docs.rs/stderrlog/0.4.0")]
 
+extern crate atty;
 extern crate chrono;
 extern crate log;
 extern crate termcolor;
 extern crate thread_local;
 
+use atty::Stream;
 use chrono::Local;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use std::cell::RefCell;
@@ -317,8 +319,7 @@ impl Log for StdErrLog {
             return;
         }
 
-        let writer = self.writer
-            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(self.color_choice))));
+        let writer = self.writer();
         let writer = writer.borrow_mut();
         let mut writer = io::LineWriter::new(writer.lock());
         let color = match record.metadata().level() {
@@ -360,8 +361,7 @@ impl Log for StdErrLog {
     }
 
     fn flush(&self) {
-        let writer = self.writer
-            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(self.color_choice))));
+        let writer = self.writer();
         let mut writer = writer.borrow_mut();
         writer.flush().ok();
     }
@@ -378,6 +378,16 @@ impl StdErrLog {
             writer: CachedThreadLocal::new(),
             color_choice: ColorChoice::Auto,
         }
+    }
+
+    fn writer(&self) -> &RefCell<StandardStream>  {
+        let color_choice = if atty::is(Stream::Stderr) {
+            self.color_choice
+        } else {
+            ColorChoice::Never
+        };
+        self.writer
+            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(color_choice))))
     }
 
     /// Sets the verbosity level of messages that will be displayed

@@ -20,6 +20,7 @@ is-it-maintained-open-issues = { repository = "cardoe/stderrlog-rs" }
 maintenance = { status = "passively-maintained" }
 
 [dependencies]
+atty = "0.2.13"
 chrono = "0.4"
 log = { version = "0.4.1", features = ["std"] }
 termcolor = "0.3.3"
