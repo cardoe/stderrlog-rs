@@ -218,11 +218,13 @@
 
 #![doc(html_root_url = "https://docs.rs/stderrlog/0.4.0")]
 
+extern crate atty;
 extern crate chrono;
 extern crate log;
 extern crate termcolor;
 extern crate thread_local;
 
+use atty::Stream;
 use chrono::Local;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use std::cell::RefCell;
@@ -477,7 +479,16 @@ impl StdErrLog {
     }
 
     /// sets the the logger as active
-    pub fn init(&self) -> Result<(), log::SetLoggerError> {
+    pub fn init(&mut self) -> Result<(), log::SetLoggerError> {
+        /* if the user is using auto color choices then
+         * detect if stderr is a tty, if it is continue
+         * otherwise turn off colors by default
+         */
+        self.color_choice = if self.color_choice == ColorChoice::Auto && atty::is(Stream::Stderr) {
+            ColorChoice::Auto
+        } else {
+            ColorChoice::Never
+        };
         log::set_max_level(self.log_level_filter());
         log::set_boxed_logger(Box::new(self.clone()))
     }
