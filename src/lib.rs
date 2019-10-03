@@ -277,6 +277,7 @@ impl FromStr for Timestamp {
 pub struct StdErrLog {
     verbosity: LevelFilter,
     quiet: bool,
+    levels: bool,
     timestamp: Timestamp,
     modules: Vec<String>,
     writer: CachedThreadLocal<RefCell<StandardStream>>,
@@ -288,6 +289,7 @@ impl fmt::Debug for StdErrLog {
         f.debug_struct("StdErrLog")
             .field("verbosity", &self.verbosity)
             .field("quiet", &self.quiet)
+            .field("levels", &self.levels)
             .field("timestamp", &self.timestamp)
             .field("modules", &self.modules)
             .field("writer", &"stderr")
@@ -353,7 +355,10 @@ impl Log for StdErrLog {
             }
             Timestamp::Off => {}
         }
-        let _ = writeln!(writer, "{} - {}", record.level(), record.args());
+        if self.levels {
+            let _ = write!(writer, "{} - ", record.level());
+        }
+        let _ = writeln!(writer, "{}", record.args());
         {
             writer.get_mut().reset().expect("failed to reset the color");
         }
@@ -373,6 +378,7 @@ impl StdErrLog {
         StdErrLog {
             verbosity: LevelFilter::Error,
             quiet: false,
+            levels: true,
             timestamp: Timestamp::Off,
             modules: Vec::new(),
             writer: CachedThreadLocal::new(),
@@ -397,6 +403,12 @@ impl StdErrLog {
     /// silence all output, no matter the value of verbosity
     pub fn quiet(&mut self, quiet: bool) -> &mut StdErrLog {
         self.quiet = quiet;
+        self
+    }
+
+    /// Enables or disables the use of timestamps in log messages (default is true)
+    pub fn levels(&mut self, levels: bool) -> &mut StdErrLog {
+        self.levels = levels;
         self
     }
 
