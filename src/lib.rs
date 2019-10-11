@@ -319,7 +319,8 @@ impl Log for StdErrLog {
             return;
         }
 
-        let writer = self.writer();
+        let writer = self.writer
+            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(self.color_choice))));
         let writer = writer.borrow_mut();
         let mut writer = io::LineWriter::new(writer.lock());
         let color = match record.metadata().level() {
@@ -361,7 +362,8 @@ impl Log for StdErrLog {
     }
 
     fn flush(&self) {
-        let writer = self.writer();
+        let writer = self.writer
+            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(self.color_choice))));
         let mut writer = writer.borrow_mut();
         writer.flush().ok();
     }
@@ -370,24 +372,20 @@ impl Log for StdErrLog {
 impl StdErrLog {
     /// creates a new stderr logger
     pub fn new() -> StdErrLog {
+        let color_choice = if atty::is(Stream::Stderr) {
+            ColorChoice::Auto
+        } else {
+            ColorChoice::Never
+        };
+
         StdErrLog {
             verbosity: LevelFilter::Error,
             quiet: false,
             timestamp: Timestamp::Off,
             modules: Vec::new(),
             writer: CachedThreadLocal::new(),
-            color_choice: ColorChoice::Auto,
+            color_choice: color_choice,
         }
-    }
-
-    fn writer(&self) -> &RefCell<StandardStream>  {
-        let color_choice = if atty::is(Stream::Stderr) {
-            self.color_choice
-        } else {
-            ColorChoice::Never
-        };
-        self.writer
-            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(color_choice))))
     }
 
     /// Sets the verbosity level of messages that will be displayed
@@ -418,7 +416,11 @@ impl StdErrLog {
 
     /// Enables or disables the use of color in log messages
     pub fn color(&mut self, choice: ColorChoice) -> &mut StdErrLog {
-        self.color_choice = choice;
+        self.color_choice = if atty::is(Stream::Stderr) {
+            choice
+        } else {
+            ColorChoice::Never
+        };
         self
     }
 
