@@ -7,7 +7,7 @@ fn no_levels_output() {
     stderrlog::new()
         .module(module_path!())
         .verbosity(4)
-        .levels(false)
+        .show_level(false)
         .init()
         .unwrap();
 
