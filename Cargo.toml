@@ -10,7 +10,7 @@ name = "stderrlog"
 readme = "README.md"
 changelog = "CHANGELOG.md"
 repository = "https://github.com/cardoe/stderrlog-rs"
-version = "0.4.2-alpha.0"
+version = "0.4.2"
 
 [badges]
 appveyor = { repository = "cardoe/stderrlog-rs", branch = "master", service = "github" }
