@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 0.4.2
+
+- add the ability to not show logging levels via `.show_levels()`
+- auto color choice (the default) will now disable colors if stderr
+  is not connected to a tty by default
+
 ## 0.4.1
 
 ### Added
