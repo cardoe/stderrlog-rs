@@ -1,5 +1,11 @@
 # ChangeLog
 
+## 0.4.3
+
+- only check if stderr is a tty for the auto color choice, all other
+  choices pass through without modification
+- bump termcolor to 1.0
+
 ## 0.4.2
 
 - add the ability to not show logging levels via `.show_levels()`
