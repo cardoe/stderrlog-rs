@@ -23,7 +23,7 @@ maintenance = { status = "passively-maintained" }
 atty = "^0.2, <=0.2.11"
 chrono = "0.4"
 log = { version = "0.4.1", features = ["std"] }
-termcolor = "0.3.3"
+termcolor = "1.0"
 thread_local = "^0.3, <=0.3.4"
 
 [dev-dependencies]
