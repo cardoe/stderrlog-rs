@@ -496,10 +496,15 @@ impl StdErrLog {
          * detect if stderr is a tty, if it is continue
          * otherwise turn off colors by default
          */
-        self.color_choice = if self.color_choice == ColorChoice::Auto && atty::is(Stream::Stderr) {
-            ColorChoice::Auto
-        } else {
-            ColorChoice::Never
+        self.color_choice = match self.color_choice {
+            ColorChoice::Auto => {
+                if atty::is(Stream::Stderr) {
+                    ColorChoice::Auto
+                } else {
+                    ColorChoice::Never
+                }
+            },
+            other => other,
         };
         log::set_max_level(self.log_level_filter());
         log::set_boxed_logger(Box::new(self.clone()))
