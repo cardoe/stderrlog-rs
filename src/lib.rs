@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![doc(html_root_url = "https://docs.rs/stderrlog/0.4.1")]
+#![doc(html_root_url = "https://docs.rs/stderrlog/0.4.3")]
 
 //! A simple logger to provide symantics similar to what is expected
 //! of most UNIX utilities by logging to stderr and the higher the
@@ -215,8 +215,6 @@
 //! - `cargo run --bin large-example --`
 //! - `cargo run --bin another --`
 //! - `cargo run --bin yet --`
-
-#![doc(html_root_url = "https://docs.rs/stderrlog/0.4.0")]
 
 extern crate atty;
 extern crate chrono;
