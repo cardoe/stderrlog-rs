@@ -9,7 +9,8 @@
 extern crate docopt;
 #[macro_use]
 extern crate log;
-extern crate rustc_serialize;
+#[macro_use]
+extern crate serde_derive;
 extern crate stderrlog;
 
 use docopt::Docopt;
@@ -20,7 +21,7 @@ Usage:
   stderrtest [-q] [-v...]
 ";
 
-#[derive(RustcDecodable)]
+#[derive(Deserialize)]
 struct Args {
     flag_v: usize,
     flag_q: bool,
@@ -28,7 +29,7 @@ struct Args {
 
 fn main() {
     let args: Args = Docopt::new(USAGE)
-        .and_then(|d| d.argv(env::args().into_iter()).decode())
+        .and_then(|d| d.argv(env::args().into_iter()).deserialize())
         .unwrap_or_else(|e| e.exit());
 
     stderrlog::new()
