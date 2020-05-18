@@ -319,8 +319,9 @@ impl Log for StdErrLog {
             return;
         }
 
-        let writer = self.writer
-            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(self.color_choice))));
+        let writer = self
+            .writer
+            .get_or(|| RefCell::new(StandardStream::stderr(self.color_choice)));
         let writer = writer.borrow_mut();
         let mut writer = io::LineWriter::new(writer.lock());
         let color = match record.metadata().level() {
@@ -365,8 +366,9 @@ impl Log for StdErrLog {
     }
 
     fn flush(&self) {
-        let writer = self.writer
-            .get_or(|| Box::new(RefCell::new(StandardStream::stderr(self.color_choice))));
+        let writer = self
+            .writer
+            .get_or(|| RefCell::new(StandardStream::stderr(self.color_choice)));
         let mut writer = writer.borrow_mut();
         writer.flush().ok();
     }
@@ -473,7 +475,8 @@ impl StdErrLog {
         // if a prefix of module_path is in `self.modules`, it must
         // be located at the first location before
         // where module_path would be.
-        match self.modules
+        match self
+            .modules
             .binary_search_by(|module| module.as_str().cmp(&module_path))
         {
             Ok(_) => {
@@ -501,7 +504,7 @@ impl StdErrLog {
                 } else {
                     ColorChoice::Never
                 }
-            },
+            }
             other => other,
         };
         log::set_max_level(self.log_level_filter());
