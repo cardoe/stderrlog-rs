@@ -1,13 +1,9 @@
-#[macro_use]
-extern crate log;
-extern crate stderrlog;
-
 mod utils;
 
 mod included_not {
-    use log;
+    use crate::utils;
+    use log::log_enabled;
     use stderrlog::StdErrLog;
-    use utils;
     #[test]
     fn including_module_with_substring_name() {
         utils::init();
@@ -21,9 +17,9 @@ mod included_not {
 
 mod included {
     mod b {
-        use log;
+        use crate::utils;
+        use log::log_enabled;
         use stderrlog::StdErrLog;
-        use utils;
         #[test]
         fn super_and_submodule_included() {
             utils::init();

@@ -1,6 +1,4 @@
-#[macro_use]
-extern crate log;
-extern crate stderrlog;
+use log::*;
 
 #[test]
 fn no_levels_output() {

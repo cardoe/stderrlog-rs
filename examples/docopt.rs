@@ -6,14 +6,9 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-extern crate docopt;
-#[macro_use]
-extern crate log;
-#[macro_use]
-extern crate serde_derive;
-extern crate stderrlog;
-
 use docopt::Docopt;
+use log::*;
+use serde::Deserialize;
 use std::env;
 
 const USAGE: &'static str = "

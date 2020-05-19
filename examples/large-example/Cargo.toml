@@ -2,8 +2,9 @@
 name = "large-example"
 version = "0.1.0"
 authors = ["Doug Goldstein <cardoe@cardoe.com>"]
+edition = "2018"
 
 [dependencies]
-log = "0.3"
+log = "0.4"
 stderrlog = { path = "../../" }
-structopt = "0.2"
+structopt = "0.3"

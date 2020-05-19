@@ -1,8 +1,9 @@
-use init_logger;
+extern crate test;
+
+use super::{init_logger, util::with_redirected_stderr};
+use log::*;
 use std::panic;
 use test::Bencher;
-
-use util::with_redirected_stderr;
 
 #[bench]
 fn simple_string(b: &mut Bencher) {

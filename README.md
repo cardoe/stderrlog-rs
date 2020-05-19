@@ -46,12 +46,6 @@ Add this to your `Cargo.toml`:
 stderrlog = "0.4"
 ```
 
-and this to your crate root:
-
-```rust
-extern crate stderrlog;
-```
-
 and this to your main():
 
 ```rust

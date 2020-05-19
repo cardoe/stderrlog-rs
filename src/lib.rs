@@ -17,9 +17,7 @@
 //! ## Simple Use Case
 //!
 //! ```rust
-//! #[macro_use]
-//! extern crate log;
-//! extern crate stderrlog;
+//! use log::*;
 //!
 //! fn main() {
 //!     stderrlog::new().module(module_path!()).init().unwrap();
@@ -33,12 +31,7 @@
 //! # StructOpt Example
 //!
 //! ```
-//! #[macro_use]
-//! extern crate log;
-//! extern crate stderrlog;
-//! #[macro_use]
-//! extern crate structopt;
-//!
+//! use log::*;
 //! use structopt::StructOpt;
 //!
 //! /// A StructOpt example
@@ -77,14 +70,9 @@
 //! ## docopt Example
 //!
 //! ```rust
-//! extern crate docopt;
-//! #[macro_use]
-//! extern crate log;
-//! #[macro_use]
-//! extern crate serde_derive;
-//! extern crate stderrlog;
-//!
+//! use log::*;
 //! use docopt::Docopt;
+//! use serde::Deserialize;
 //!
 //! const USAGE: &'static str = "
 //! Usage: program [-q] [-v...]
@@ -121,13 +109,8 @@
 //! # clap Example
 //!
 //! ```
-//! #[macro_use]
-//! extern crate clap;
-//! #[macro_use]
-//! extern crate log;
-//! extern crate stderrlog;
-//!
-//! use clap::{Arg, App};
+//! use clap::{Arg, App, crate_version};
+//! use log::*;
 //! use std::str::FromStr;
 //!
 //! fn main() {
@@ -216,12 +199,6 @@
 //! - `cargo run --bin large-example --`
 //! - `cargo run --bin another --`
 //! - `cargo run --bin yet --`
-
-extern crate atty;
-extern crate chrono;
-extern crate log;
-extern crate termcolor;
-extern crate thread_local;
 
 use atty::Stream;
 use chrono::Local;
@@ -564,8 +541,6 @@ mod tests {
 
     #[test]
     fn test_default_level() {
-        extern crate log;
-
         super::new().module(module_path!()).init().unwrap();
 
         assert_eq!(log::Level::Error, log::max_level())

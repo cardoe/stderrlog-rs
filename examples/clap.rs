@@ -6,13 +6,8 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#[macro_use]
-extern crate clap;
-#[macro_use]
-extern crate log;
-extern crate stderrlog;
-
-use clap::{App, Arg};
+use clap::{crate_version, App, Arg};
+use log::*;
 use std::str::FromStr;
 
 fn main() {

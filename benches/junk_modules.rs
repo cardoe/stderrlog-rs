@@ -1,10 +1,4 @@
 #![feature(test)]
-extern crate libc;
-extern crate stderrlog;
-extern crate test;
-
-#[macro_use]
-extern crate log;
 
 mod common;
 mod util;

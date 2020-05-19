@@ -1,10 +1,5 @@
-#[macro_use]
-extern crate clap;
-#[macro_use]
-extern crate log;
-extern crate stderrlog;
-
-use clap::{App, Arg};
+use clap::{crate_version, App, Arg};
+use log::*;
 
 fn main() {
     let m = App::new("stderrlog example")

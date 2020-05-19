@@ -6,11 +6,10 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#[macro_use]
-extern crate log;
-
 pub mod bar;
 mod foo;
+
+use log::*;
 
 pub fn libfn() {
     println!("Entered {}", module_path!());
