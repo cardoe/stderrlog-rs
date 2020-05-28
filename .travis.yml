@@ -7,8 +7,13 @@ rust:
   - stable
   - 1.31.0 # minimum supported version
 script:
-  - cargo build --verbose
-  - cargo test --verbose
+  - if [ ${TRAVIS_RUST_VERSION} = "nightly" ]; then
+      cargo generate-lockfile -Z minimal-versions;
+    else
+      cargo generate-lockfile;
+    fi
+  - cargo build --verbose --locked
+  - cargo test --verbose --locked
   - if [ ${TRAVIS_RUST_VERSION} = "nightly" ]; then
       cargo bench;
     fi
