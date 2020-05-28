@@ -185,7 +185,7 @@
 //! Bumping the minimum version of Rust is a minor breaking
 //! change and requires a minor version to be bumped.
 //!
-//! The minimum supported Rust version for this release is 1.16.0.
+//! The minimum supported Rust version for this release is 1.31.0.
 //!
 //! ### Module Level Logging
 //!

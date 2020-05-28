@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 0.5.0
+### Changed
+- bumped minimum Rust version to 1.31.0 to match the log crate
+
 ## 0.4.3
 
 ### Changed

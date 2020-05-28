@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/no8slwtoy5va0w4g/branch/master?svg=true)](https://ci.appveyor.com/project/cardoe/stderrlog-rs/branch/master)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/cardoe/stderrlog-rs.svg)](http://isitmaintained.com/project/cardoe/stderrlog-rs "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/cardoe/stderrlog-rs.svg)](http://isitmaintained.com/project/cardoe/stderrlog-rs "Percentage of issues still open")
-[![Rust version]( https://img.shields.io/badge/rust-1.16+-blue.svg)]()
+[![Rust version]( https://img.shields.io/badge/rust-1.31.0+-blue.svg)]()
 [![Documentation](https://docs.rs/stderrlog/badge.svg)](https://docs.rs/stderrlog)
 [![Latest version](https://img.shields.io/crates/v/stderrlog.svg)](https://crates.io/crates/stderrlog)
 [![All downloads](https://img.shields.io/crates/d/stderrlog.svg)](https://crates.io/crates/stderrlog)
@@ -24,6 +24,9 @@ For example binaries showing how
 
 ## Supported Versions
 
+* `stderrlog` 0.5.x supports
+  1) Rust 1.31.0 and newer
+  2) `log` >= 0.4.1
 * `stderrlog` 0.4.x supports
   1) Rust 1.16.0 and newer
   2) `log` >= 0.4.1
