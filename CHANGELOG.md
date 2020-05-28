@@ -2,13 +2,16 @@
 
 ## 0.4.3
 
+### Changed
 - only check if stderr is a tty for the auto color choice, all other
   choices pass through without modification
 - bump termcolor to 1.0
 
 ## 0.4.2
-
+### Added
 - add the ability to not show logging levels via `.show_levels()`
+
+### Fixed
 - auto color choice (the default) will now disable colors if stderr
   is not connected to a tty by default
 
