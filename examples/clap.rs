@@ -35,14 +35,16 @@ fn main() {
 
     let verbose = m.occurrences_of("verbosity") as usize;
     let quiet = m.is_present("quiet");
-    let ts = m.value_of("timestamp")
+    let ts = m
+        .value_of("timestamp")
         .map(|v| {
             stderrlog::Timestamp::from_str(v).unwrap_or_else(|_| {
                 clap::Error {
                     message: "invalid value for 'timestamp'".into(),
                     kind: clap::ErrorKind::InvalidValue,
                     info: None,
-                }.exit()
+                }
+                .exit()
             })
         })
         .unwrap_or(stderrlog::Timestamp::Off);

@@ -36,7 +36,8 @@ fn main() {
             message: "invalid value for 'timestamp'".into(),
             kind: clap::ErrorKind::InvalidValue,
             info: None,
-        }.exit(),
+        }
+        .exit(),
     };
 
     stderrlog::new()
