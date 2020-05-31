@@ -159,8 +159,8 @@
 //!
 //! ### `log` Compatibility
 //!
-//! The 0.3.x versions of `stderrlog` aim to provide compatibility with
-//! applications using `log` 0.3.x
+//! The 0.4.x versions of `stderrlog` aim to provide compatibility with
+//! applications using `log` 0.4.1.
 //!
 //! ### Rust Compatibility
 //!
