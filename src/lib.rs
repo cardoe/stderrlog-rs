@@ -386,7 +386,7 @@ impl StdErrLog {
         self
     }
 
-    /// Enables or disables the use of timestamps in log messages (default is true)
+    /// Enables or disables the use of levels in log messages (default is true)
     pub fn show_level(&mut self, levels: bool) -> &mut StdErrLog {
         self.show_level = levels;
         self
