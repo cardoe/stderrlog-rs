@@ -2,9 +2,12 @@
 
 ## 0.5.0
 ### Changed
-- bumped minimum Rust version to 1.31.0
+- Bumped minimum Rust version to 1.31.0
   * 1.16.0 fails on current version of some deps and some crates.io fetches
-  * Log crate 0.4.9 raised its MSRV to 1.31.0 (but is currently yanked)
+  * Log crate 0.4.11 raised its MSRV to 1.31.0
+- Updated and checked minimum version of all deps
+- Switched to rust edition 2018
+- Improved CI testing
 
 ## 0.4.3
 
