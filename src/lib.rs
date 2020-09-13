@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![doc(html_root_url = "https://docs.rs/stderrlog/0.4.3")]
+#![doc(html_root_url = "https://docs.rs/stderrlog/0.5.0")]
 
 //! A simple logger to provide symantics similar to what is expected
 //! of most UNIX utilities by logging to stderr and the higher the
@@ -159,8 +159,8 @@
 //!
 //! ### `log` Compatibility
 //!
-//! The 0.3.x versions of `stderrlog` aim to provide compatibility with
-//! applications using `log` 0.3.x
+//! The 0.5.x versions of `stderrlog` aim to provide compatibility with
+//! applications using `log` >= 0.4.11.
 //!
 //! ### Rust Compatibility
 //!
