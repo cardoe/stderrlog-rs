@@ -260,6 +260,7 @@ pub struct StdErrLog {
     modules: Vec<String>,
     writer: CachedThreadLocal<RefCell<StandardStream>>,
     color_choice: ColorChoice,
+    show_module_names: bool,
 }
 
 impl fmt::Debug for StdErrLog {
@@ -315,6 +316,10 @@ impl Log for StdErrLog {
                 .set_color(ColorSpec::new().set_fg(Some(color)))
                 .expect("failed to set color");
         }
+
+        if self.show_module_names {
+            let _ = write!(writer, "{}: ", record.metadata().target());
+        }
         match self.timestamp {
             Timestamp::Second => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%:z";
@@ -363,6 +368,7 @@ impl StdErrLog {
             modules: Vec::new(),
             writer: CachedThreadLocal::new(),
             color_choice: ColorChoice::Auto,
+            show_module_names: false,
         }
     }
 
@@ -407,6 +413,12 @@ impl StdErrLog {
     /// specify a module to allow to log to stderr
     pub fn module<T: Into<String>>(&mut self, module: T) -> &mut StdErrLog {
         self._module(module.into())
+    }
+
+    /// Enables or disables the use of module names in log messages
+    pub fn show_module_names(&mut self, show_module_names: bool) -> &mut StdErrLog {
+        self.show_module_names = show_module_names;
+        self
     }
 
     fn _module(&mut self, module: String) -> &mut StdErrLog {
