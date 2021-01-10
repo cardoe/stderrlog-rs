@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 0.5.1
+### Added
+- added `.show_module_names()` to include module name in output
+
 ## 0.5.0
 ### Changed
 - Bumped minimum Rust version to 1.31.0
