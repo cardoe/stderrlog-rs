@@ -7,7 +7,7 @@ thread_local! {
     pub static LOGGER_INSTANCE: RefCell<Option<StdErrLog>> = RefCell::new(None);
 }
 
-static INIT_LOGGER: sync::Once = sync::ONCE_INIT;
+static INIT_LOGGER: sync::Once = sync::Once::new();
 
 struct DelegatingLogger;
 
