@@ -210,7 +210,7 @@ use std::str::FromStr;
 use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
 
 pub use termcolor::ColorChoice;
-use thread_local::CachedThreadLocal;
+use thread_local::ThreadLocal;
 
 /// State of the timestampping in the logger.
 #[derive(Clone, Copy, Debug)]
@@ -258,7 +258,7 @@ pub struct StdErrLog {
     show_level: bool,
     timestamp: Timestamp,
     modules: Vec<String>,
-    writer: CachedThreadLocal<RefCell<StandardStream>>,
+    writer: ThreadLocal<RefCell<StandardStream>>,
     color_choice: ColorChoice,
     show_module_names: bool,
 }
@@ -281,7 +281,7 @@ impl Clone for StdErrLog {
     fn clone(&self) -> StdErrLog {
         StdErrLog {
             modules: self.modules.clone(),
-            writer: CachedThreadLocal::new(),
+            writer: ThreadLocal::new(),
             ..*self
         }
     }
@@ -366,7 +366,7 @@ impl StdErrLog {
             show_level: true,
             timestamp: Timestamp::Off,
             modules: Vec::new(),
-            writer: CachedThreadLocal::new(),
+            writer: ThreadLocal::new(),
             color_choice: ColorChoice::Auto,
             show_module_names: false,
         }
