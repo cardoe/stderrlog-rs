@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![doc(html_root_url = "https://docs.rs/stderrlog/0.5.0")]
+#![doc(html_root_url = "https://docs.rs/stderrlog/0.6.0")]
 
 //! A simple logger to provide symantics similar to what is expected
 //! of most UNIX utilities by logging to stderr and the higher the
@@ -169,7 +169,7 @@
 //! Bumping the minimum version of Rust is a minor breaking
 //! change and requires a minor version to be bumped.
 //!
-//! The minimum supported Rust version for this release is 1.31.0.
+//! The minimum supported Rust version for this release is 1.36.0.
 //!
 //! ### Module Level Logging
 //!
