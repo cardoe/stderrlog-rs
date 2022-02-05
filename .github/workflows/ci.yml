@@ -1,5 +1,9 @@
 name: CI
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
+    branches:
+      - master
 env:
   CARGO_TERM_COLOR: always
 jobs:
@@ -9,7 +13,7 @@ jobs:
         rust:
           - rust: stable
             command: test
-          - rust: 1.31.0
+          - rust: 1.36.0
             command: check
     runs-on: ubuntu-latest
     steps:
