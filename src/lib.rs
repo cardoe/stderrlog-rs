@@ -373,6 +373,13 @@ impl StdErrLog {
     }
 
     /// Sets the verbosity level of messages that will be displayed
+    ///
+    /// Values map as follows:
+    /// 0 -> Error
+    /// 1 -> Warn
+    /// 2 -> Info
+    /// 3 -> Debug
+    /// 4 or higher -> Trace
     pub fn verbosity(&mut self, verbosity: usize) -> &mut StdErrLog {
         let log_lvl = match verbosity {
             0 => LevelFilter::Error,
