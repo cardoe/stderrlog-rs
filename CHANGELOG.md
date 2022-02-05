@@ -4,6 +4,7 @@
 ### Changed
 - Bumped the minimum Rust version to 1.36.0
   * [RUSTSEC-2022-0006](https://rustsec.org/advisories/RUSTSEC-2022-0006.html) fixed
+- Switch to time 0.2 away from chrono for [RUSTSEC-2020-0071](https://rustsec.org/advisories/RUSTSEC-2020-0159.html)
 
 ## 0.5.1
 ### Added

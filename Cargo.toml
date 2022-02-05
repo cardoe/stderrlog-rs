@@ -21,10 +21,10 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 atty = "^0.2.6"
-chrono = "0.4.10"
 log = { version = "0.4.11", features = ["std"] }
 termcolor = "~1.1"
 thread_local = "~1.1"
+time = "0.2"
 
 [dev-dependencies]
 clap = "~2.33.0"

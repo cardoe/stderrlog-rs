@@ -200,14 +200,16 @@
 //! - `cargo run --bin another --`
 //! - `cargo run --bin yet --`
 
+#![allow(deprecated)]
+
 use atty::Stream;
-use chrono::Local;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use std::cell::RefCell;
 use std::fmt;
 use std::io::{self, Write};
 use std::str::FromStr;
 use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
+use time::OffsetDateTime;
 
 pub use termcolor::ColorChoice;
 use thread_local::ThreadLocal;
@@ -322,20 +324,20 @@ impl Log for StdErrLog {
         }
         match self.timestamp {
             Timestamp::Second => {
-                let fmt = "%Y-%m-%dT%H:%M:%S%:z";
-                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                let fmt = "%Y-%m-%dT%H:%M:%S:z";
+                let _ = write!(writer, "{} - ", OffsetDateTime::now_local().format(fmt));
             }
             Timestamp::Millisecond => {
-                let fmt = "%Y-%m-%dT%H:%M:%S%.3f%:z";
-                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                let fmt = "%Y-%m-%dT%H:%M:%S%.3f:z";
+                let _ = write!(writer, "{} - ", OffsetDateTime::now_local().format(fmt));
             }
             Timestamp::Microsecond => {
-                let fmt = "%Y-%m-%dT%H:%M:%S%.6f%:z";
-                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                let fmt = "%Y-%m-%dT%H:%M:%S%.6f:z";
+                let _ = write!(writer, "{} - ", OffsetDateTime::now_local().format(fmt));
             }
             Timestamp::Nanosecond => {
-                let fmt = "%Y-%m-%dT%H:%M:%S%.9f%:z";
-                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                let fmt = "%Y-%m-%dT%H:%M:%S%.9f:z";
+                let _ = write!(writer, "{} - ", OffsetDateTime::now_local().format(fmt));
             }
             Timestamp::Off => {}
         }
@@ -467,7 +469,7 @@ impl StdErrLog {
         // where module_path would be.
         match self
             .modules
-            .binary_search_by(|module| module.as_str().cmp(&module_path))
+            .binary_search_by(|module| module.as_str().cmp(module_path))
         {
             Ok(_) => {
                 // Found exact module: return true
