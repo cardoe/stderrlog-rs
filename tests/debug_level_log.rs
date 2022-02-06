@@ -1,11 +1,11 @@
 use log::*;
 
 #[test]
-fn debug_level() {
+fn debug_level_log() {
     stderrlog::new()
         .module(module_path!())
-        .timestamp(stderrlog::Timestamp::Second)
-        .verbosity(3)
+        .timestamp(stderrlog::Timestamp::Nanosecond)
+        .verbosity(log::Level::Debug)
         .init()
         .unwrap();
 

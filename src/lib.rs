@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![doc(html_root_url = "https://docs.rs/stderrlog/0.5.0")]
+#![doc(html_root_url = "https://docs.rs/stderrlog/0.6.0")]
 
 //! A simple logger to provide symantics similar to what is expected
 //! of most UNIX utilities by logging to stderr and the higher the
@@ -169,7 +169,7 @@
 //! Bumping the minimum version of Rust is a minor breaking
 //! change and requires a minor version to be bumped.
 //!
-//! The minimum supported Rust version for this release is 1.31.0.
+//! The minimum supported Rust version for this release is 1.36.0.
 //!
 //! ### Module Level Logging
 //!
@@ -210,7 +210,7 @@ use std::str::FromStr;
 use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
 
 pub use termcolor::ColorChoice;
-use thread_local::CachedThreadLocal;
+use thread_local::ThreadLocal;
 
 /// State of the timestampping in the logger.
 #[derive(Clone, Copy, Debug)]
@@ -258,7 +258,7 @@ pub struct StdErrLog {
     show_level: bool,
     timestamp: Timestamp,
     modules: Vec<String>,
-    writer: CachedThreadLocal<RefCell<StandardStream>>,
+    writer: ThreadLocal<RefCell<StandardStream>>,
     color_choice: ColorChoice,
     show_module_names: bool,
 }
@@ -281,7 +281,7 @@ impl Clone for StdErrLog {
     fn clone(&self) -> StdErrLog {
         StdErrLog {
             modules: self.modules.clone(),
-            writer: CachedThreadLocal::new(),
+            writer: ThreadLocal::new(),
             ..*self
         }
     }
@@ -357,6 +357,52 @@ impl Log for StdErrLog {
     }
 }
 
+pub enum LogLevelNum {
+    Off,
+    Error,
+    Warn,
+    Info,
+    Debug,
+    Trace,
+}
+
+impl From<usize> for LogLevelNum {
+    fn from(verbosity: usize) -> Self {
+        match verbosity {
+            0 => LogLevelNum::Error,
+            1 => LogLevelNum::Warn,
+            2 => LogLevelNum::Info,
+            3 => LogLevelNum::Debug,
+            _ => LogLevelNum::Trace,
+        }
+    }
+}
+
+impl From<Level> for LogLevelNum {
+    fn from(l: Level) -> Self {
+        match l {
+            Level::Error => LogLevelNum::Error,
+            Level::Warn => LogLevelNum::Warn,
+            Level::Info => LogLevelNum::Info,
+            Level::Debug => LogLevelNum::Debug,
+            Level::Trace => LogLevelNum::Trace,
+        }
+    }
+}
+
+impl From<LevelFilter> for LogLevelNum {
+    fn from(l: LevelFilter) -> Self {
+        match l {
+            LevelFilter::Off => LogLevelNum::Off,
+            LevelFilter::Error => LogLevelNum::Error,
+            LevelFilter::Warn => LogLevelNum::Warn,
+            LevelFilter::Info => LogLevelNum::Info,
+            LevelFilter::Debug => LogLevelNum::Debug,
+            LevelFilter::Trace => LogLevelNum::Trace,
+        }
+    }
+}
+
 impl StdErrLog {
     /// creates a new stderr logger
     pub fn new() -> StdErrLog {
@@ -366,23 +412,35 @@ impl StdErrLog {
             show_level: true,
             timestamp: Timestamp::Off,
             modules: Vec::new(),
-            writer: CachedThreadLocal::new(),
+            writer: ThreadLocal::new(),
             color_choice: ColorChoice::Auto,
             show_module_names: false,
         }
     }
 
     /// Sets the verbosity level of messages that will be displayed
-    pub fn verbosity(&mut self, verbosity: usize) -> &mut StdErrLog {
-        let log_lvl = match verbosity {
-            0 => LevelFilter::Error,
-            1 => LevelFilter::Warn,
-            2 => LevelFilter::Info,
-            3 => LevelFilter::Debug,
-            _ => LevelFilter::Trace,
+    ///
+    /// Values can be supplied as:
+    /// - usize
+    /// - log::Level
+    /// - log::LevelFilter
+    /// - LogLevelNum
+    ///
+    /// Values map as follows:
+    /// 0 -> Error
+    /// 1 -> Warn
+    /// 2 -> Info
+    /// 3 -> Debug
+    /// 4 or higher -> Trace
+    pub fn verbosity<V: Into<LogLevelNum>>(&mut self, verbosity: V) -> &mut StdErrLog {
+        self.verbosity = match verbosity.into() {
+            LogLevelNum::Off => LevelFilter::Off,
+            LogLevelNum::Error => LevelFilter::Error,
+            LogLevelNum::Warn => LevelFilter::Warn,
+            LogLevelNum::Info => LevelFilter::Info,
+            LogLevelNum::Debug => LevelFilter::Debug,
+            LogLevelNum::Trace => LevelFilter::Trace,
         };
-
-        self.verbosity = log_lvl;
         self
     }
 

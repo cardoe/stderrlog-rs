@@ -4,6 +4,7 @@ use log::*;
 fn quiet_trace_level() {
     stderrlog::new()
         .module(module_path!())
+        .timestamp(stderrlog::Timestamp::Second)
         .verbosity(4)
         .quiet(true)
         .init()

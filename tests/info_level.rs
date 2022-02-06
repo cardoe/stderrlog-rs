@@ -4,6 +4,7 @@ use log::*;
 fn info_level() {
     stderrlog::new()
         .module(module_path!())
+        .timestamp(stderrlog::Timestamp::Microsecond)
         .verbosity(2)
         .init()
         .unwrap();

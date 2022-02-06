@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 0.6.0
+### Changed
+- Bumped the minimum Rust version to 1.36.0
+  * [RUSTSEC-2022-0006](https://rustsec.org/advisories/RUSTSEC-2022-0006.html) fixed
+
 ## 0.5.1
 ### Added
 - added `.show_module_names()` to include module name in output
