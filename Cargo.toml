@@ -28,7 +28,7 @@ thread_local = "~1.0"
 
 [dev-dependencies]
 clap = "~2.33.0"
-docopt = "~1.1"
+docopt = "1.1"
 serde = { version = "1.0", features = ["derive"] }
 libc = "0.2.18"
 structopt = "0.3.20"
