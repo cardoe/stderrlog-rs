@@ -525,7 +525,7 @@ impl StdErrLog {
         // where module_path would be.
         match self
             .modules
-            .binary_search_by(|module| module.as_str().cmp(&module_path))
+            .binary_search_by(|module| module.as_str().cmp(module_path))
         {
             Ok(_) => {
                 // Found exact module: return true
