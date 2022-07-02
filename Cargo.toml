@@ -9,7 +9,7 @@ license = "MIT/Apache-2.0"
 name = "stderrlog"
 readme = "README.md"
 repository = "https://github.com/cardoe/stderrlog-rs"
-version = "0.5.2-alpha.0"
+version = "0.5.2"
 edition = "2018"
 
 [badges]
