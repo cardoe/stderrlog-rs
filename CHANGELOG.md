@@ -1,8 +1,10 @@
 # ChangeLog
 
-## Unreleased
+## 0.5.3
 ### Changed
 - Moved the timestamps feature behind the enabled-by-default crate feature `timestamps`.
+
+### Fixed
 - Added missing `show_module_names` field to `StdErrLog` debug implementation.
 
 ## 0.5.2
