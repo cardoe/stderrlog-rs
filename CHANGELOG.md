@@ -1,9 +1,12 @@
 # ChangeLog
 
-## 0.6.0
+## 0.5.2
 ### Changed
 - Bumped the minimum Rust version to 1.36.0
   * [RUSTSEC-2022-0006](https://rustsec.org/advisories/RUSTSEC-2022-0006.html) fixed
+  This is a semver break but given the age of the Rust versions and changes that have
+  happened in the log crate, we'll do it.
+- Make it easier to specify debug levels with a number or enum.
 
 ## 0.5.1
 ### Added
