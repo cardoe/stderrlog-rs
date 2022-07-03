@@ -273,6 +273,7 @@ impl fmt::Debug for StdErrLog {
             .field("modules", &self.modules)
             .field("writer", &"stderr")
             .field("color_choice", &self.color_choice)
+            .field("show_module_names", &self.show_module_names)
             .finish()
     }
 }
