@@ -1,5 +1,9 @@
 # ChangeLog
 
+## Unreleased
+### Changed
+- Added missing `show_module_names` field to `StdErrLog` debug implementation.
+
 ## 0.5.2
 ### Changed
 - Bumped the minimum Rust version to 1.36.0
