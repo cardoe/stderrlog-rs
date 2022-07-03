@@ -8,7 +8,7 @@
 
 #![doc(html_root_url = "https://docs.rs/stderrlog/0.6.0")]
 
-//! A simple logger to provide symantics similar to what is expected
+//! A simple logger to provide semantics similar to what is expected
 //! of most UNIX utilities by logging to stderr and the higher the
 //! verbosity the higher the log level. It supports the
 //! ability to provide timestamps at different granularities. As
@@ -186,7 +186,7 @@
 //! the binary itself but none of its dependencies. To enable logging
 //! from extra crates just add another call to `module()` with the
 //! name of the crate. To enable logging for only a module within
-//! that crate specifiy `crate::module` to `module()`. crates and
+//! that crate specify `crate::module` to `module()`. crates and
 //! modules will be named the same way would would include them in
 //! source code with `use` (e.g. `some-crate` would be `some_crate`).
 //!
@@ -212,7 +212,7 @@ use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
 pub use termcolor::ColorChoice;
 use thread_local::ThreadLocal;
 
-/// State of the timestampping in the logger.
+/// State of the timestamping in the logger.
 #[derive(Clone, Copy, Debug)]
 pub enum Timestamp {
     /// Disable timestamping of log messages
@@ -496,7 +496,7 @@ impl StdErrLog {
         self
     }
 
-    /// specifiy modules to allow to log to stderr
+    /// specify modules to allow to log to stderr
     pub fn modules<T: Into<String>, I: IntoIterator<Item = T>>(
         &mut self,
         modules: I,
