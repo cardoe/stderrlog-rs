@@ -199,13 +199,22 @@
 //! - `cargo run --bin large-example --`
 //! - `cargo run --bin another --`
 //! - `cargo run --bin yet --`
+//!
+//! ### Features
+//!
+//! `stderrlog` has the following default crate features, which can be disabled
+//! to reduce the number of dependencies:
+//!
+//! - `timestamps`: Provides support for log timestamp prefixes (uses the `chrono` crate).
 
 use atty::Stream;
+#[cfg(feature = "timestamps")]
 use chrono::Local;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use std::cell::RefCell;
 use std::fmt;
 use std::io::{self, Write};
+#[cfg(feature = "timestamps")]
 use std::str::FromStr;
 use termcolor::{Color, ColorSpec, StandardStream, WriteColor};
 
@@ -213,6 +222,7 @@ pub use termcolor::ColorChoice;
 use thread_local::ThreadLocal;
 
 /// State of the timestamping in the logger.
+#[cfg(feature = "timestamps")]
 #[derive(Clone, Copy, Debug)]
 pub enum Timestamp {
     /// Disable timestamping of log messages
@@ -236,6 +246,7 @@ pub enum Timestamp {
 /// - "none" | "off" -> `Timestamp::Off`
 ///
 /// This is provided as a helper for argument parsers
+#[cfg(feature = "timestamps")]
 impl FromStr for Timestamp {
     type Err = String;
 
@@ -256,6 +267,7 @@ pub struct StdErrLog {
     verbosity: LevelFilter,
     quiet: bool,
     show_level: bool,
+    #[cfg(feature = "timestamps")]
     timestamp: Timestamp,
     modules: Vec<String>,
     writer: ThreadLocal<RefCell<StandardStream>>,
@@ -265,11 +277,14 @@ pub struct StdErrLog {
 
 impl fmt::Debug for StdErrLog {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_struct("StdErrLog")
+        let mut builder = f.debug_struct("StdErrLog");
+        builder
             .field("verbosity", &self.verbosity)
             .field("quiet", &self.quiet)
-            .field("show_level", &self.show_level)
-            .field("timestamp", &self.timestamp)
+            .field("show_level", &self.show_level);
+        #[cfg(feature = "timestamps")]
+        builder.field("timestamp", &self.timestamp);
+        builder
             .field("modules", &self.modules)
             .field("writer", &"stderr")
             .field("color_choice", &self.color_choice)
@@ -321,6 +336,7 @@ impl Log for StdErrLog {
         if self.show_module_names {
             let _ = write!(writer, "{}: ", record.metadata().target());
         }
+        #[cfg(feature = "timestamps")]
         match self.timestamp {
             Timestamp::Second => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%:z";
@@ -411,6 +427,7 @@ impl StdErrLog {
             verbosity: LevelFilter::Error,
             quiet: false,
             show_level: true,
+            #[cfg(feature = "timestamps")]
             timestamp: Timestamp::Off,
             modules: Vec::new(),
             writer: ThreadLocal::new(),
@@ -458,6 +475,7 @@ impl StdErrLog {
     }
 
     /// Enables or disables the use of timestamps in log messages
+    #[cfg(feature = "timestamps")]
     pub fn timestamp(&mut self, timestamp: Timestamp) -> &mut StdErrLog {
         self.timestamp = timestamp;
         self
