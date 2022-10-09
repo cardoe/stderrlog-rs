@@ -6,18 +6,18 @@ fn main() {
         .version(crate_version!())
         .arg(
             Arg::with_name("verbosity")
-                .short("v")
+                .short('v')
                 .multiple(true)
                 .help("Increase message verbosity"),
         )
         .arg(
             Arg::with_name("quiet")
-                .short("q")
+                .short('q')
                 .help("Silence all output"),
         )
         .arg(
             Arg::with_name("timestamp")
-                .short("t")
+                .short('t')
                 .help("prepend log lines with a timestamp")
                 .takes_value(true)
                 .possible_values(&["none", "sec", "ms", "us", "ns"]),
@@ -32,11 +32,10 @@ fn main() {
         Some("us") => stderrlog::Timestamp::Microsecond,
         Some("sec") => stderrlog::Timestamp::Second,
         Some("none") | None => stderrlog::Timestamp::Off,
-        Some(_) => clap::Error {
-            message: "invalid value for 'timestamp'".into(),
-            kind: clap::ErrorKind::InvalidValue,
-            info: None,
-        }
+        Some(_) => clap::Error::raw(
+            clap::ErrorKind::InvalidValue,
+            "invalid value for 'timestamp'",
+        )
         .exit(),
     };
 
