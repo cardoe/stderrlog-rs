@@ -13,8 +13,10 @@ jobs:
         rust:
           - rust: stable
             command: test
+            args: ""
           - rust: 1.36.0
             command: check
+            args: "--locked"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,9 +25,12 @@ jobs:
           profile: minimal
           toolchain: ${{ matrix.rust.rust }}
           override: true
+      - run: mv Cargo.lock.msrv Cargo.lock
+        if: ${{ matrix.rust.rust}} == 1.36.0
       - uses: actions-rs/cargo@v1
         with:
           command: ${{ matrix.rust.command }}
+          args: ${{ matrix.rust.args }}
   fmt-clippy:
     runs-on: ubuntu-latest
     steps:
