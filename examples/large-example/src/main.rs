@@ -32,7 +32,6 @@ fn main() {
     let opt = Opt::from_args();
 
     stderrlog::new()
-        .module(module_path!())
         .quiet(opt.quiet)
         .verbosity(opt.verbose)
         .timestamp(opt.ts.unwrap_or(stderrlog::Timestamp::Off))
