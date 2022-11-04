@@ -611,7 +611,7 @@ fn is_submodule(parent: &str, possible_child: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::is_submodule;
+    use super::{is_submodule, StdErrLog};
 
     #[test]
     fn submodule() {
@@ -630,5 +630,39 @@ mod tests {
         super::new().module(module_path!()).init().unwrap();
 
         assert_eq!(log::Level::Error, log::max_level())
+    }
+
+    #[test]
+    fn modules_display_all() {
+        let logger = StdErrLog::new();
+        assert!(logger.includes_module("good"));
+    }
+
+    #[test]
+    fn modules_display_exact_match() {
+        let mut logger = StdErrLog::new();
+        logger.module("good");
+        assert!(logger.includes_module("good"));
+        assert!(!logger.includes_module("bad"));
+    }
+
+    #[test]
+    fn modules_display_module() {
+        let mut logger = StdErrLog::new();
+        logger.module("good");
+        assert!(logger.includes_module("good::foo"));
+        assert!(logger.includes_module("good::bar"));
+        assert!(logger.includes_module("good"));
+        assert!(!logger.includes_module("bad"));
+    }
+
+    #[test]
+    fn modules_display_submodule() {
+        let mut logger = StdErrLog::new();
+        logger.module("good::foo");
+        assert!(logger.includes_module("good::foo"));
+        assert!(!logger.includes_module("good::bar"));
+        assert!(!logger.includes_module("good"));
+        assert!(!logger.includes_module("bad"));
     }
 }
