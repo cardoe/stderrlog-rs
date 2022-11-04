@@ -117,14 +117,15 @@
 //!     let m = App::new("stderrlog example")
 //!         .version(crate_version!())
 //!         .arg(Arg::with_name("verbosity")
-//!              .short("v")
+//!              .short('v')
+//!              .takes_value(true)
 //!              .multiple(true)
 //!              .help("Increase message verbosity"))
 //!         .arg(Arg::with_name("quiet")
-//!              .short("q")
+//!              .short('q')
 //!              .help("Silence all output"))
 //!         .arg(Arg::with_name("timestamp")
-//!              .short("t")
+//!              .short('t')
 //!              .help("prepend log lines with a timestamp")
 //!              .takes_value(true)
 //!              .possible_values(&["none", "sec", "ms", "ns"]))
@@ -134,11 +135,7 @@
 //!     let quiet = m.is_present("quiet");
 //!     let ts = m.value_of("timestamp").map(|v| {
 //!         stderrlog::Timestamp::from_str(v).unwrap_or_else(|_| {
-//!             clap::Error {
-//!                 message: "invalid value for 'timestamp'".into(),
-//!                 kind: clap::ErrorKind::InvalidValue,
-//!                 info: None,
-//!             }.exit()
+//!             clap::Error::raw(clap::ErrorKind::InvalidValue, "invalid value for 'timestamp'").exit()
 //!         })
 //!     }).unwrap_or(stderrlog::Timestamp::Off);
 //!
