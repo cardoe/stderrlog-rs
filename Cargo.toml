@@ -21,7 +21,7 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 atty = "^0.2.6"
-chrono = { version = "0.4.10", optional = true }
+chrono = { version = "0.4.10", optional = true, default-features = false, features = ["clock", "std", "wasmbind"] }
 log = { version = "0.4.11", features = ["std"] }
 termcolor = "~1.1"
 thread_local = "~1.1"
