@@ -355,7 +355,7 @@ dependencies = [
 
 [[package]]
 name = "stderrlog"
-version = "0.5.4-alpha.0"
+version = "0.5.5-alpha.0"
 dependencies = [
  "atty 0.2.14 (registry+https://github.com/rust-lang/crates.io-index)",
  "chrono 0.4.22 (registry+https://github.com/rust-lang/crates.io-index)",
