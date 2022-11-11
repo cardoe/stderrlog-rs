@@ -319,10 +319,10 @@ impl Log for StdErrLog {
         let mut writer = io::LineWriter::new(writer.lock());
         let color = match record.metadata().level() {
             Level::Error => Color::Red,
-            Level::Warn => Color::Magenta,
-            Level::Info => Color::Yellow,
+            Level::Warn => Color::Yellow,
+            Level::Info => Color::Blue,
             Level::Debug => Color::Cyan,
-            Level::Trace => Color::Blue,
+            Level::Trace => Color::Magenta,
         };
         {
             // A failure here indicates the stream closed. Do not panic.
@@ -356,13 +356,14 @@ impl Log for StdErrLog {
             Timestamp::Off => {}
         }
         if self.show_level {
-            let _ = write!(writer, "{} - ", record.level());
+            let _ = write!(writer, "{} ", record.level());
         }
-        let _ = writeln!(writer, "{}", record.args());
+        writer.flush().ok();
         {
             // A failure here indicates the stream closed. Do not panic.
             writer.get_mut().reset().ok();
         }
+        let _ = writeln!(writer, "{}", record.args());
     }
 
     fn flush(&self) {
