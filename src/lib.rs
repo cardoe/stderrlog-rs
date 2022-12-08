@@ -325,10 +325,11 @@ impl Log for StdErrLog {
             Level::Trace => Color::Blue,
         };
         {
+            // A failure here indicates the stream closed. Do not panic.
             writer
                 .get_mut()
                 .set_color(ColorSpec::new().set_fg(Some(color)))
-                .expect("failed to set color");
+                .ok();
         }
 
         if self.show_module_names {
@@ -359,7 +360,8 @@ impl Log for StdErrLog {
         }
         let _ = writeln!(writer, "{}", record.args());
         {
-            writer.get_mut().reset().expect("failed to reset the color");
+            // A failure here indicates the stream closed. Do not panic.
+            writer.get_mut().reset().ok();
         }
     }
 
