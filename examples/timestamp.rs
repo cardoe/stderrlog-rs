@@ -7,7 +7,7 @@ fn main() {
         .arg(
             Arg::with_name("verbosity")
                 .short('v')
-                .multiple(true)
+                .multiple_occurrences(true)
                 .help("Increase message verbosity"),
         )
         .arg(
