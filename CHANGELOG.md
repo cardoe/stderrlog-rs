@@ -1,5 +1,10 @@
 # ChangeLog
 
+## 0.6.0
+### Changed
+- Bumped the minimum Rust version to 1.48.0
+  * [RUSTSEC-2021-0145](https://rustsec.org/advisories/RUSTSEC-2021-0145) fixed
+
 ## 0.5.3
 ### Changed
 - Moved the timestamps feature behind the enabled-by-default crate feature `timestamps`.

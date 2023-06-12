@@ -166,7 +166,7 @@
 //! Bumping the minimum version of Rust is a minor breaking
 //! change and requires a minor version to be bumped.
 //!
-//! The minimum supported Rust version for this release is 1.36.0.
+//! The minimum supported Rust version for this release is 1.48.0.
 //!
 //! ### Module Level Logging
 //!
@@ -204,9 +204,9 @@
 //!
 //! - `timestamps`: Provides support for log timestamp prefixes (uses the `chrono` crate).
 
-use atty::Stream;
 #[cfg(feature = "timestamps")]
 use chrono::Local;
+use is_terminal::IsTerminal;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use std::cell::RefCell;
 use std::fmt;
@@ -563,7 +563,7 @@ impl StdErrLog {
          */
         self.color_choice = match self.color_choice {
             ColorChoice::Auto => {
-                if atty::is(Stream::Stderr) {
+                if io::stderr().is_terminal() {
                     ColorChoice::Auto
                 } else {
                     ColorChoice::Never
