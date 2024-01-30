@@ -1,5 +1,6 @@
 name: CI
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
@@ -7,67 +8,48 @@ on:
 env:
   CARGO_TERM_COLOR: always
 jobs:
-  test:
+  msrv:
     strategy:
       matrix:
         rust:
-          - rust: stable
+          - version: stable
             command: test
             args: ""
-          - rust: 1.48.0
+          - version: 1.48.0
             command: check
             args: "--locked"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: ${{ matrix.rust.rust }}
-          override: true
+      - uses: actions/checkout@v4
+      - name: install Rust
+        run: rustup toolchain install ${{ matrix.rust.version }} --profile minimal --allow-downgrade
       - run: mv Cargo.lock.msrv Cargo.lock
-        if: ${{ matrix.rust.rust}} == 1.48.0
-      - uses: actions-rs/cargo@v1
-        with:
-          command: ${{ matrix.rust.command }}
-          args: ${{ matrix.rust.args }}
-  fmt-clippy:
+        if: ${{ matrix.rust.version}} == 1.48.0
+      - name: cargo check/test
+        run: cargo ${{ matrix.rust.command }} ${{ matrix.rust.args }}
+
+  test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - name: install Rust
+        run: rustup toolchain install stable --profile minimal --component rustfmt,clippy --allow-downgrade
+      - name: cargo fmt
+        run: cargo fmt --check
+      - name: cargo clippy
+        run: cargo clippy --all-features -- --deny warnings
+      - name: install tarpaulin
+        uses: baptiste0928/cargo-install@v2
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
-          components: rustfmt, clippy
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
-      - uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --all-features
-  coverage:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - uses: actions-rs/tarpaulin@v0.1
-        with:
-          args: '--ignore-tests'
+          crate: cargo-tarpaulin
+      - name: cargo tarpaulin
+        run: cargo tarpaulin --engine llvm --follow-exec --post-test-delay 10
+
   bench:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: bench
+      - uses: actions/checkout@v4
+      - name: install Rust
+        run: rustup toolchain install nightly --profile minimal
+      - name: cargo bench
+        run: cargo +nightly bench --all-features
