@@ -18,6 +18,7 @@ mod unix {
         unsafe { File::from_raw_fd(fd) }
     }
 
+    #[cfg(all(unix, target_os = "linux"))]
     #[test]
     fn log_after_pty_close() {
         let pt = wrap_fd(unsafe { libc::getpt() }, "getpt");
