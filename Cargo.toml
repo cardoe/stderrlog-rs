@@ -9,7 +9,7 @@ license = "MIT OR Apache-2.0"
 name = "stderrlog"
 readme = "README.md"
 repository = "https://github.com/cardoe/stderrlog-rs"
-version = "0.5.5-alpha.0"
+version = "0.6.0"
 edition = "2018"
 # This metadata field is ignored by the actual MSRV, but it is useful for newer
 # Rust versions and crates.io to know the MSRV
