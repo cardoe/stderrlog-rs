@@ -6,6 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
+#![allow(clippy::needless_doctest_main)]
 #![doc(html_root_url = "https://docs.rs/stderrlog/0.6.0")]
 
 //! A simple logger to provide semantics similar to what is expected
