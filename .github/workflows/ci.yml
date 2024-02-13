@@ -22,7 +22,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: install Rust
-        run: rustup toolchain install ${{ matrix.rust.version }} --profile minimal --allow-downgrade
+        run: |
+          rustup toolchain install ${{ matrix.rust.version }} --profile minimal --allow-downgrade
+          rustup default ${{ matrix.rust.version }}
       - run: cp Cargo.lock.msrv Cargo.lock
         if: ${{ matrix.rust.version}} == 1.48.0
       - name: cargo check/test
