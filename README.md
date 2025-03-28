@@ -14,9 +14,7 @@ logs to `stderr` based on verbosity.
 
 ## Documentation
 
-For a working example for [StructOpt](https::/crates.io/crates/structopt),
-[clap](https://crates.io/crates/clap), and
-[docopt](https://crates.io/crates/docopt) please see the
+For a working example for [clap](https://crates.io/crates/clap), please see the
 [crate level documentation](https://docs.rs/stderrlog/*/stderrlog/).
 
 For example binaries showing how

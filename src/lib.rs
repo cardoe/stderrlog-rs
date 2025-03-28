@@ -29,114 +29,36 @@
 //! }
 //! ```
 //!
-//! # StructOpt Example
-//!
-//! ```
-//! use log::*;
-//! use structopt::StructOpt;
-//!
-//! /// A StructOpt example
-//! #[derive(StructOpt, Debug)]
-//! #[structopt()]
-//! struct Opt {
-//!     /// Silence all output
-//!     #[structopt(short = "q", long = "quiet")]
-//!     quiet: bool,
-//!     /// Verbose mode (-v, -vv, -vvv, etc)
-//!     #[structopt(short = "v", long = "verbose", parse(from_occurrences))]
-//!     verbose: usize,
-//!     /// Timestamp (sec, ms, ns, none)
-//!     #[structopt(short = "t", long = "timestamp")]
-//!     ts: Option<stderrlog::Timestamp>,
-//! }
-//!
-//! fn main() {
-//!     let opt = Opt::from_args();
-//!
-//!     stderrlog::new()
-//!         .module(module_path!())
-//!         .quiet(opt.quiet)
-//!         .verbosity(opt.verbose)
-//!         .timestamp(opt.ts.unwrap_or(stderrlog::Timestamp::Off))
-//!         .init()
-//!         .unwrap();
-//!     trace!("trace message");
-//!     debug!("debug message");
-//!     info!("info message");
-//!     warn!("warn message");
-//!     error!("error message");
-//! }
-//! ```
-//!
-//! ## docopt Example
-//!
-//! ```rust
-//! use log::*;
-//! use docopt::Docopt;
-//! use serde::Deserialize;
-//!
-//! const USAGE: &'static str = "
-//! Usage: program [-q] [-v...]
-//! ";
-//!
-//! #[derive(Debug, Deserialize)]
-//! struct Args {
-//!     flag_q: bool,
-//!     flag_v: usize,
-//! }
-//!
-//! fn main() {
-//!     let args: Args = Docopt::new(USAGE)
-//!                             .and_then(|d| d.deserialize())
-//!                             .unwrap_or_else(|e| e.exit());
-//!
-//!     stderrlog::new()
-//!             .module(module_path!())
-//!             .quiet(args.flag_q)
-//!             .timestamp(stderrlog::Timestamp::Second)
-//!             .verbosity(args.flag_v)
-//!             .init()
-//!             .unwrap();
-//!     trace!("trace message");
-//!     debug!("debug message");
-//!     info!("info message");
-//!     warn!("warn message");
-//!     error!("error message");
-//!
-//!     // ...
-//! }
-//! ```
-//!
 //! # clap Example
 //!
 //! ```
-//! use clap::{Arg, App, crate_version};
+//! use clap::{crate_version, Arg, ArgAction, Command};
 //! use log::*;
 //! use std::str::FromStr;
 //!
 //! fn main() {
-//!     let m = App::new("stderrlog example")
+//!     let m = Command::new("stderrlog example")
 //!         .version(crate_version!())
-//!         .arg(Arg::with_name("verbosity")
+//!         .arg(Arg::new("verbosity")
 //!              .short('v')
-//!              .takes_value(true)
-//!              .multiple(true)
+//!              .action(ArgAction::Count)
 //!              .help("Increase message verbosity"))
-//!         .arg(Arg::with_name("quiet")
+//!         .arg(Arg::new("quiet")
 //!              .short('q')
+//!              .action(ArgAction::SetTrue)
 //!              .help("Silence all output"))
-//!         .arg(Arg::with_name("timestamp")
+//!         .arg(Arg::new("timestamp")
 //!              .short('t')
 //!              .help("prepend log lines with a timestamp")
-//!              .takes_value(true)
-//!              .possible_values(&["none", "sec", "ms", "ns"]))
+//!              .num_args(1)
+//!              .value_parser(["none", "sec", "ms", "us", "ns"]))
 //!         .get_matches();
 //!
-//!     let verbose = m.occurrences_of("verbosity") as usize;
-//!     let quiet = m.is_present("quiet");
-//!     let ts = m.value_of("timestamp").map(|v| {
+//!     let verbose = m.get_count("verbosity") as usize;
+//!     let quiet = m.get_flag("quiet");
+//!     let ts = m.get_one::<String>("timestamp").map(|v| {
 //!         stderrlog::Timestamp::from_str(v).unwrap_or_else(|_| {
-//!             clap::Error::raw(clap::ErrorKind::InvalidValue, "invalid value for 'timestamp'").exit()
+//!             clap::Error::raw(clap::error::ErrorKind::InvalidValue, "invalid value for 'timestamp'").exit()
 //!         })
 //!     }).unwrap_or(stderrlog::Timestamp::Off);
 //!

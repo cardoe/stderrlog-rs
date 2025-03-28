@@ -1,39 +1,40 @@
-use clap::{crate_version, App, Arg};
+use clap::{crate_version, Arg, ArgAction, Command};
 use log::*;
 
 fn main() {
-    let m = App::new("stderrlog example")
+    let m = Command::new("stderrlog example")
         .version(crate_version!())
         .arg(
-            Arg::with_name("verbosity")
+            Arg::new("verbosity")
                 .short('v')
-                .multiple_occurrences(true)
+                .action(ArgAction::Count)
                 .help("Increase message verbosity"),
         )
         .arg(
-            Arg::with_name("quiet")
+            Arg::new("quiet")
                 .short('q')
+                .action(ArgAction::SetTrue)
                 .help("Silence all output"),
         )
         .arg(
-            Arg::with_name("timestamp")
+            Arg::new("timestamp")
                 .short('t')
                 .help("prepend log lines with a timestamp")
-                .takes_value(true)
-                .possible_values(&["none", "sec", "ms", "us", "ns"]),
+                .num_args(1)
+                .value_parser(["none", "sec", "ms", "us", "ns"]),
         )
         .get_matches();
 
-    let verbose = m.occurrences_of("verbosity") as usize;
-    let quiet = m.is_present("quiet");
-    let ts = match m.value_of("timestamp") {
+    let verbose = m.get_count("verbosity") as usize;
+    let quiet = m.get_flag("quiet");
+    let ts = match m.get_one::<String>("timestamp").map(|s| s.as_str()) {
         Some("ns") => stderrlog::Timestamp::Nanosecond,
         Some("ms") => stderrlog::Timestamp::Millisecond,
         Some("us") => stderrlog::Timestamp::Microsecond,
         Some("sec") => stderrlog::Timestamp::Second,
         Some("none") | None => stderrlog::Timestamp::Off,
         Some(_) => clap::Error::raw(
-            clap::ErrorKind::InvalidValue,
+            clap::error::ErrorKind::InvalidValue,
             "invalid value for 'timestamp'",
         )
         .exit(),

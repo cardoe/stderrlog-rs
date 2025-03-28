@@ -5,6 +5,6 @@ authors = ["Doug Goldstein <cardoe@cardoe.com>"]
 edition = "2018"
 
 [dependencies]
+clap = { version = "4", features = ["derive"] }
 log = "0.4.11"
 stderrlog = { path = "../../" }
-structopt = "0.3"

@@ -15,7 +15,7 @@ jobs:
           - version: stable
             command: test
             args: ""
-          - version: 1.48.0
+          - version: 1.74.0
             command: check
             args: "--locked"
     runs-on: ubuntu-latest
@@ -26,7 +26,7 @@ jobs:
           rustup toolchain install ${{ matrix.rust.version }} --profile minimal --allow-downgrade
           rustup default ${{ matrix.rust.version }}
       - run: cp Cargo.lock.msrv Cargo.lock
-        if: ${{ matrix.rust.version}} == 1.48.0
+        if: ${{ matrix.rust.version}} == 1.74.0
       - name: cargo check/test
         run: |
           cargo --version
