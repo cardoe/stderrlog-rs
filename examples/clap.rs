@@ -6,41 +6,42 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use clap::{crate_version, App, Arg};
+use clap::{crate_version, Arg, ArgAction, Command};
 use log::*;
 use std::str::FromStr;
 
 fn main() {
-    let m = App::new("stderrlog example")
+    let m = Command::new("stderrlog example")
         .version(crate_version!())
         .arg(
-            Arg::with_name("verbosity")
+            Arg::new("verbosity")
                 .short('v')
-                .multiple(true)
+                .action(ArgAction::Count)
                 .help("Increase message verbosity"),
         )
         .arg(
-            Arg::with_name("quiet")
+            Arg::new("quiet")
                 .short('q')
+                .action(ArgAction::SetTrue)
                 .help("Silence all output"),
         )
         .arg(
-            Arg::with_name("timestamp")
+            Arg::new("timestamp")
                 .short('t')
                 .help("prepend log lines with a timestamp")
-                .takes_value(true)
-                .possible_values(&["none", "sec", "ms", "us", "ns"]),
+                .num_args(1)
+                .value_parser(["none", "sec", "ms", "us", "ns"]),
         )
         .get_matches();
 
-    let verbose = m.occurrences_of("verbosity") as usize;
-    let quiet = m.is_present("quiet");
+    let verbose = m.get_count("verbosity") as usize;
+    let quiet = m.get_flag("quiet");
     let ts = m
-        .value_of("timestamp")
+        .get_one::<String>("timestamp")
         .map(|v| {
             stderrlog::Timestamp::from_str(v).unwrap_or_else(|_| {
                 clap::Error::raw(
-                    clap::ErrorKind::InvalidValue,
+                    clap::error::ErrorKind::InvalidValue,
                     "invalid value for 'timestamp'",
                 )
                 .exit()

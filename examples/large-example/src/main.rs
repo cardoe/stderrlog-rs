@@ -7,33 +7,33 @@
 // except according to those terms.
 
 use large_example::bar;
+
+use clap::{ArgAction, Parser};
 use log::*;
-use structopt::StructOpt;
 
 /// A basic example
-#[derive(StructOpt, Debug)]
-#[structopt()]
+#[derive(Debug, Parser)]
 struct Opt {
     /// Silence all output
-    #[structopt(short = "q", long = "quiet")]
+    #[clap(short = 'q', long = "quiet")]
     quiet: bool,
     /// Verbose mode (-v, -vv, -vvv, etc.)
-    #[structopt(short = "v", long = "verbose", parse(from_occurrences))]
-    verbose: usize,
+    #[clap(short = 'v', long = "verbose", action = ArgAction::Count)]
+    verbose: u8,
     /// Allow module to log
-    #[structopt(short = "m", long = "module")]
+    #[clap(short = 'm', long = "module")]
     modules: Vec<String>,
     /// Timestamp (sec, ms, us, ns, none)
-    #[structopt(short = "t", long = "timestamp")]
+    #[clap(short = 't', long = "timestamp")]
     ts: Option<stderrlog::Timestamp>,
 }
 
 fn main() {
-    let opt = Opt::from_args();
+    let opt = Opt::parse();
 
     stderrlog::new()
         .quiet(opt.quiet)
-        .verbosity(opt.verbose)
+        .verbosity(opt.verbose as usize)
         .timestamp(opt.ts.unwrap_or(stderrlog::Timestamp::Off))
         .modules(opt.modules)
         .init()

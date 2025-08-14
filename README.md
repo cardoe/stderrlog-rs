@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/no8slwtoy5va0w4g/branch/master?svg=true)](https://ci.appveyor.com/project/cardoe/stderrlog-rs/branch/master)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/cardoe/stderrlog-rs.svg)](http://isitmaintained.com/project/cardoe/stderrlog-rs "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/cardoe/stderrlog-rs.svg)](http://isitmaintained.com/project/cardoe/stderrlog-rs "Percentage of issues still open")
-[![Rust version]( https://img.shields.io/badge/rust-1.48.0+-blue.svg)]()
+[![Rust version]( https://img.shields.io/badge/rust-1.74.0+-blue.svg)]()
 [![Documentation](https://docs.rs/stderrlog/badge.svg)](https://docs.rs/stderrlog)
 [![Latest version](https://img.shields.io/crates/v/stderrlog.svg)](https://crates.io/crates/stderrlog)
 [![All downloads](https://img.shields.io/crates/d/stderrlog.svg)](https://crates.io/crates/stderrlog)
@@ -14,9 +14,7 @@ logs to `stderr` based on verbosity.
 
 ## Documentation
 
-For a working example for [StructOpt](https::/crates.io/crates/structopt),
-[clap](https://crates.io/crates/clap), and
-[docopt](https://crates.io/crates/docopt) please see the
+For a working example for [clap](https://crates.io/crates/clap), please see the
 [crate level documentation](https://docs.rs/stderrlog/*/stderrlog/).
 
 For example binaries showing how
@@ -46,7 +44,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-stderrlog = "0.4"
+stderrlog = "0.6"
 ```
 
 and this to your main():
