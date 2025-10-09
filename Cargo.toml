@@ -26,8 +26,8 @@ maintenance = { status = "passively-maintained" }
 is-terminal = "0.4.7"
 chrono = { version = "0.4.10", optional = true, default-features = false, features = ["clock", "std", "wasmbind"] }
 log = { version = "0.4.11", features = ["std"] }
-termcolor = "~1.1"
-thread_local = "~1.1"
+termcolor = "1"
+thread_local = "1.1"
 
 [dev-dependencies]
 clap = { version = "3", features = ["cargo"] }
