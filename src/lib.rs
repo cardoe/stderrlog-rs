@@ -203,11 +203,11 @@
 //! `stderrlog` has the following default crate features, which can be disabled
 //! to reduce the number of dependencies:
 //!
-//! - `timestamps`: Provides support for log timestamp prefixes (uses the `chrono` crate).
+//! - `timestamps`: Provides support for log timestamp prefixes (uses the `jiff` crate).
 
-#[cfg(feature = "timestamps")]
-use chrono::Local;
 use is_terminal::IsTerminal;
+#[cfg(feature = "timestamps")]
+use jiff::ZonedDateTime;
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use std::cell::RefCell;
 use std::fmt;
@@ -339,19 +339,19 @@ impl Log for StdErrLog {
         match self.timestamp {
             Timestamp::Second => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%:z";
-                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                let _ = write!(writer, "{} - ", ZonedDateTime::now().strftime(fmt));
             }
             Timestamp::Millisecond => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%.3f%:z";
-                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                let _ = write!(writer, "{} - ", ZonedDateTime::now().strftime(fmt));
             }
             Timestamp::Microsecond => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%.6f%:z";
-                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                let _ = write!(writer, "{} - ", ZonedDateTime::now().strftime(fmt));
             }
             Timestamp::Nanosecond => {
                 let fmt = "%Y-%m-%dT%H:%M:%S%.9f%:z";
-                let _ = write!(writer, "{} - ", Local::now().format(fmt));
+                let _ = write!(writer, "{} - ", ZonedDateTime::now().strftime(fmt));
             }
             Timestamp::Off => {}
         }
