@@ -11,9 +11,7 @@ readme = "README.md"
 repository = "https://github.com/cardoe/stderrlog-rs"
 version = "0.6.0"
 edition = "2018"
-# This metadata field is ignored by the actual MSRV, but it is useful for newer
-# Rust versions and crates.io to know the MSRV
-rust-version = "1.48"
+rust-version = "1.85"
 
 [badges]
 appveyor = { repository = "cardoe/stderrlog-rs", branch = "master", service = "github" }
@@ -24,7 +22,7 @@ maintenance = { status = "passively-maintained" }
 
 [dependencies]
 is-terminal = "0.4.7"
-chrono = { version = "0.4.10", optional = true, default-features = false, features = ["clock", "std", "wasmbind"] }
+jiff = { version = "1", optional = true, features = ["js"] }
 log = { version = "0.4.11", features = ["std"] }
 termcolor = "~1.1"
 thread_local = "~1.1"
@@ -38,4 +36,4 @@ structopt = "0.3.20"
 
 [features]
 default = ["timestamps"]
-timestamps = ["chrono"]
+timestamps = ["jiff"]
