@@ -615,7 +615,7 @@ fn is_submodule(parent: &str, possible_child: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_submodule, StdErrLog};
+    use super::{StdErrLog, is_submodule};
 
     #[test]
     fn submodule() {

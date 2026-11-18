@@ -6,7 +6,7 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-use clap::{crate_version, App, Arg};
+use clap::{App, Arg, crate_version};
 use log::*;
 use std::str::FromStr;
 
