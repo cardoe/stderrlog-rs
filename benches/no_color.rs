@@ -5,7 +5,7 @@ mod util;
 
 use std::sync;
 
-static INIT_LOGGER: sync::Once = sync::ONCE_INIT;
+static INIT_LOGGER: sync::Once = sync::Once::new();
 
 fn init_logger() {
     INIT_LOGGER.call_once(|| {
