@@ -22,8 +22,8 @@ maintenance = { status = "passively-maintained" }
 is-terminal = "0.4.7"
 jiff = { version = "1", optional = true, features = ["js"] }
 log = { version = "0.4.11", features = ["std"] }
-termcolor = "~1.1"
-thread_local = "~1.1"
+termcolor = "1"
+thread_local = "1.1"
 
 [dev-dependencies]
 clap = { version = "3", features = ["cargo"] }
