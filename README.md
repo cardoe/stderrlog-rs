@@ -1,5 +1,4 @@
-[![Build status](https://travis-ci.org/cardoe/stderrlog-rs.svg?branch=master)](https://travis-ci.org/cardoe/stderrlog-rs)
-[![Build status](https://ci.appveyor.com/api/projects/status/no8slwtoy5va0w4g/branch/master?svg=true)](https://ci.appveyor.com/project/cardoe/stderrlog-rs/branch/master)
+[![CI](https://github.com/cardoe/stderrlog-rs/actions/workflows/ci.yml/badge.svg)](https://github.com/cardoe/stderrlog-rs/actions/workflows/ci.yml)
 [![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/cardoe/stderrlog-rs.svg)](http://isitmaintained.com/project/cardoe/stderrlog-rs "Average time to resolve an issue")
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/cardoe/stderrlog-rs.svg)](http://isitmaintained.com/project/cardoe/stderrlog-rs "Percentage of issues still open")
 [![Rust version]( https://img.shields.io/badge/rust-1.85.0+-blue.svg)]()

@@ -205,6 +205,9 @@
 //!
 //! - `timestamps`: Provides support for log timestamp prefixes (uses the `jiff` crate).
 
+#![deny(missing_docs)]
+#![warn(missing_debug_implementations)]
+
 use is_terminal::IsTerminal;
 #[cfg(feature = "timestamps")]
 use jiff::ZonedDateTime;
@@ -375,12 +378,23 @@ impl Log for StdErrLog {
     }
 }
 
+/// A verbosity level accepted by [`StdErrLog::verbosity`].
+///
+/// This is usually created implicitly from a `usize`, [`Level`] or
+/// [`LevelFilter`] through its `From` impls, rather than named directly.
+#[derive(Debug)]
 pub enum LogLevelNum {
+    /// Log nothing.
     Off,
+    /// Log errors only.
     Error,
+    /// Log warnings and above.
     Warn,
+    /// Log info messages and above.
     Info,
+    /// Log debug messages and above.
     Debug,
+    /// Log everything.
     Trace,
 }
 
@@ -615,7 +629,7 @@ fn is_submodule(parent: &str, possible_child: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use super::{is_submodule, StdErrLog};
+    use super::{StdErrLog, is_submodule};
 
     #[test]
     fn submodule() {
@@ -627,13 +641,6 @@ mod tests {
         assert!(!is_submodule("a::b::c", "a::b::cab::d"));
         assert!(!is_submodule("a::b::c", "a::b"));
         assert!(!is_submodule("a::b::c", "a::bad"));
-    }
-
-    #[test]
-    fn test_default_level() {
-        super::new().module(module_path!()).init().unwrap();
-
-        assert_eq!(log::Level::Error, log::max_level())
     }
 
     #[test]

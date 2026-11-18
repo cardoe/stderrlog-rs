@@ -1,4 +1,4 @@
-use clap::{crate_version, App, Arg};
+use clap::{App, Arg, crate_version};
 use log::*;
 
 fn main() {
