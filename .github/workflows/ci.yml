@@ -1,59 +1,158 @@
-name: CI
+name: ci
 on:
   workflow_dispatch:
   pull_request:
   push:
     branches:
-      - master
+    - master
+  # Catch breakage from new Rust releases and dependency updates even when
+  # nothing in this repository changes.
+  schedule:
+  - cron: '00 01 * * *'
+
+# Explicitly setting permissions drops the write-all token that `schedule`
+# events otherwise get. Nothing here needs more than reading the code.
+permissions:
+  contents: read
+
 env:
   CARGO_TERM_COLOR: always
+
 jobs:
-  msrv:
-    strategy:
-      matrix:
-        rust:
-          - version: stable
-            command: test
-            args: ""
-          - version: 1.85.0
-            command: check
-            args: "--locked"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: install Rust
-        run: |
-          rustup toolchain install ${{ matrix.rust.version }} --profile minimal --allow-downgrade
-          rustup default ${{ matrix.rust.version }}
-      - run: cp Cargo.lock.msrv Cargo.lock
-        if: ${{ matrix.rust.version}} == 1.85.0
-      - name: cargo check/test
-        run: |
-          cargo --version
-          cargo ${{ matrix.rust.command }} ${{ matrix.rust.args }}
-
+  # The standard test run on every platform and channel.
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - build: stable
+          os: ubuntu-latest
+          rust: stable
+        - build: beta
+          os: ubuntu-latest
+          rust: beta
+        - build: nightly
+          os: ubuntu-latest
+          rust: nightly
+        - build: macos
+          os: macos-latest
+          rust: stable
+        - build: win-msvc
+          os: windows-latest
+          rust: stable
+        - build: win-gnu
+          os: windows-latest
+          rust: stable-x86_64-gnu
     steps:
-      - uses: actions/checkout@v4
-      - name: install Rust
-        run: rustup toolchain install stable --profile minimal --component rustfmt,clippy --allow-downgrade
-      - name: cargo fmt
-        run: cargo fmt --check
-      - name: cargo clippy
-        run: cargo clippy --all-features -- --deny warnings
-      - name: install tarpaulin
-        uses: baptiste0928/cargo-install@v2
-        with:
-          crate: cargo-tarpaulin
-      - name: cargo tarpaulin
-        run: cargo tarpaulin --engine llvm --follow-exec --post-test-delay 10
+    - name: Checkout repository
+      uses: actions/checkout@v7
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: ${{ matrix.rust }}
+    - run: cargo build --verbose
+    - run: cargo test --verbose
+    # Examples and doctests use timestamps, so only the library and the
+    # integration tests are built without default features.
+    - run: cargo test --verbose --no-default-features --lib --tests
 
+  # Check that the library still builds on the minimum supported Rust version.
+  #
+  # Like jiff, this only builds the library, not the tests: dev-dependencies
+  # (clap, structopt, ...) are free to require a newer Rust than our users do.
+  msrv:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    env:
+      # Resolve dependencies to versions whose `rust-version` is compatible,
+      # which is what users of the MSRV get with Cargo's MSRV-aware resolver.
+      CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        # Keep in sync with `rust-version` in Cargo.toml.
+        toolchain: 1.85.0
+    - run: cargo build --verbose --lib
+    - run: cargo build --verbose --lib --no-default-features
+
+  # Run the benchmarks once each as tests, so they keep compiling and working
+  # without spending CI time on measurement.
   bench:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: install Rust
-        run: rustup toolchain install nightly --profile minimal
-      - name: cargo bench
-        run: cargo +nightly bench --all-features
+    - name: Checkout repository
+      uses: actions/checkout@v7
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: nightly
+    - run: cargo test --verbose --benches
+
+  # Build the out-of-workspace example crate against this checkout.
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+    - run: cargo build --verbose --manifest-path examples/large-example/Cargo.toml
+
+  # Check that the docs build without warnings or broken intra-doc links.
+  doc:
+    runs-on: ubuntu-latest
+    env:
+      RUSTDOCFLAGS: -D warnings
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+    - run: cargo doc --verbose --no-deps --all-features
+
+  # Check that the crate packages cleanly, as `cargo publish` would.
+  package:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+    - run: cargo package --verbose
+
+  rustfmt:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+        components: rustfmt
+    - run: cargo fmt --all -- --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: stable
+        components: clippy
+    - run: cargo clippy --all-features --lib --tests -- -D warnings
