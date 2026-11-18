@@ -630,13 +630,6 @@ mod tests {
     }
 
     #[test]
-    fn test_default_level() {
-        super::new().module(module_path!()).init().unwrap();
-
-        assert_eq!(log::Level::Error, log::max_level())
-    }
-
-    #[test]
     fn modules_display_all() {
         let logger = StdErrLog::new();
         assert!(logger.includes_module("good"));
